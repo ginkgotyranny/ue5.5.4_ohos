@@ -1,0 +1,206 @@
+import UIAbility from '@ohos.app.ability.UIAbility';
+import hilog from '@ohos.hilog';
+import window from '@ohos.window';
+import i18n from '@ohos.i18n';
+import deviceInfo from '@ohos.deviceInfo';
+import nativeRender from "libNativeGlue.so";
+import bundleManager from '@ohos.bundle.bundleManager';
+import { ContextType } from "../common/Constants";
+import geoLocationManager from '@ohos.geoLocationManager';
+import { BusinessError } from '@ohos.base';
+import { GlobalContext, GlobalContextConstants } from '../common/GlobalConstants';
+import display from "@ohos.display";
+import { AbilityConstant, Configuration, ConfigurationConstant, Want } from '@kit.AbilityKit';
+import { Size } from '@kit.ArkUI';
+
+//$${entryAbilityImportAdditions}$$
+
+const nativeAppLifecycle : ESObject = nativeRender.Napi_getContext(ContextType.APP_LIFECYCLE);
+const rawFileUtils : ESObject = nativeRender.Napi_getContext(ContextType.RAW_FILE_UTILS);
+
+export default class EntryAbility extends UIAbility {
+
+	static
+	{
+//$${entryAbilityStaticInitializationAdditions}$$		
+	}
+
+	onCreate(want: Want, launchParam:  AbilityConstant.LaunchParam) {
+		nativeAppLifecycle.Napi_onCreate();
+		GlobalContext.storeGlobalThis(GlobalContextConstants.UE_ABILITY_CONTEXT, this.context);
+		hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
+		
+//$${entryAbilityOnCreateAdditions}$$
+	}
+	
+	onNewWant(want: Want, launchParam:  AbilityConstant.LaunchParam){
+		nativeAppLifecycle.Napi_onNewWant();
+		hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onNewWant');
+		
+//$${entryAbilityOnNewWantAdditions}$$	
+	}
+
+  onDestroy() {
+    nativeAppLifecycle.Napi_onDestroy();
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onDestroy');
+//$${entryAbilityonDestroyAdditions}$$	
+  }
+
+  onWindowStageCreate(windowStage: window.WindowStage) {
+    // Main window is created, set main page for this ability
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
+	let windowClass : window.Window;
+		try {
+			window.getLastWindow(this.context, (err, data) => {
+				if (err.code) {
+					console.error('Failed to obtain the top window. Cause: ' + JSON.stringify(err));
+					return;
+				}
+				windowClass = data;
+
+				// 窗口的布局是否为全屏显示状态（该状态下状态栏、导航栏仍然显示）
+				let isLayoutFullScreen : boolean = true;
+				try {
+					let promise : Promise<void> = windowClass.setWindowLayoutFullScreen(isLayoutFullScreen);
+					promise.then(() => {
+						console.info('Succeeded in setting the window layout to full-screen mode.');
+					}).catch((err : Error) => {
+						console.error('Failed to set the window layout to full-screen mode. Cause: ' + JSON.stringify(err));
+					});
+				} catch (exception) {
+					console.error('Failed to set the window layout to full-screen mode. Cause: ' + JSON.stringify(exception));
+				}
+
+				// 设置导航栏、状态栏的可见模式
+				let names: Array<'status' | 'navigation'> = []; // 全部显示需设置为['status', 'navigation']; 设置[]则不显示
+				try {
+					let promise : Promise<void> = windowClass.setWindowSystemBarEnable(names);
+					promise.then(() => {
+						console.info('Succeeded in settings the system bar to be invisible.');
+					}).catch((err : Error) => {
+						console.error('Failed to set the system bar to be invisible. Cause: ' + JSON.stringify(err));
+					});
+				} catch (exception) {
+					console.error('Failed to set the system bar to be invisible. Cause: ' + JSON.stringify(exception));
+				}
+
+				// 设置屏幕常亮
+				let isKeepScreenOn : boolean = true;
+				try {
+					let promise : Promise<void> = windowClass.setWindowKeepScreenOn(isKeepScreenOn);
+					promise.then(() => {
+						console.info('Succeeded in settings the screen to be always on.');
+					}).catch((err : Error) => {
+						console.error('Failed to set the screen to be always on. Cause: ' + JSON.stringify(err));
+					});
+				} catch (exception) {
+					console.error('Failed to set the screen to be always on. Cause: ' + JSON.stringify(exception));
+				}
+				
+				try {
+					windowClass.on('windowSizeChange', (data:Size) => {
+						nativeRender.nativeOnWindowSizeChange(data.width, data.height);
+					});
+				} catch (exception) {
+					console.error('Failed to enable the listener for window size changes. Cause: ' + JSON.stringify(exception));
+				}
+                				
+				let avoidArea = windowClass.getWindowAvoidArea(window.AvoidAreaType.TYPE_CUTOUT);
+                this.NativeSetAvoidArea(avoidArea)
+				windowClass.on('avoidAreaChange', (data) => {
+                  if (err.code) {
+                	console.error('Failed to obtain the top window. Cause: ' + JSON.stringify(err));
+                	return;
+                  } else if (data.type != window.AvoidAreaType.TYPE_CUTOUT) {
+                  //目前只支持抓取安全区的更新
+                	return;
+                  }
+                  this.NativeSetAvoidArea(data.area)
+                });
+    			nativeRender.Napi_nativeSetWindowInfo(display.getDefaultDisplaySync().orientation%2==display.Orientation.PORTRAIT);
+    			nativeRender.Napi_nativeSetDeviceOrientation(display.getDefaultDisplaySync().orientation.valueOf());
+			});
+		} catch (exception) {
+			console.error('Failed to run window.getLastWindow(). Cause: ' + JSON.stringify(exception));
+		}
+    windowStage.on('windowStageEvent', (data) => {
+      if (data == window.WindowStageEventType.ACTIVE) {
+//$${entryAbilityWindowStageActiveAdditions}$$
+      }
+      else if (data == window.WindowStageEventType.INACTIVE) {
+//$${entryAbilityWindowStageInactiveAdditions}$$
+      }
+    });
+
+	if (this.context.resourceManager.getBoolean($r('app.boolean.bUseSplash').id)) {
+	  windowStage.loadContent('pages/SplashIndex', (err, data) => {
+		  if (err.code) {
+			  hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
+			  return;
+		  }
+		  //$${entryAbilityWindowStageloadContentAdditions}$$
+		  hilog.info(0x0000, 'testTag', 'Succeeded in loading the content. Data: %{public}s', JSON.stringify(data) ?? '');
+	  });
+	} else {
+	  windowStage.loadContent('pages/Index', (err, data) => {
+		  if (err.code) {
+			  hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
+			  return;
+		  }
+		  hilog.info(0x0000, 'testTag', 'Succeeded in loading the content. Data: %{public}s', JSON.stringify(data) ?? '');
+	  });
+	}
+	
+	rawFileUtils.Napi_nativeResourceManagerInit(this.context.resourceManager);
+	rawFileUtils.Napi_nativeSetOverrideLogFileDir(this.context.getApplicationContext().filesDir);
+	// rawFileUtils.writablePathInit(this.context.cacheDir);
+	let bundleFlags = bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_REQUESTED_PERMISSION;
+	let BundleInfo = bundleManager.getBundleInfoForSelfSync(bundleFlags);
+	rawFileUtils.Napi_nativeGetBundleInfoForSelfSync(BundleInfo.name);
+	nativeRender.Napi_akiInit(deviceInfo.displayVersion, deviceInfo.majorVersion, deviceInfo.sdkApiVersion, deviceInfo.manufacture, deviceInfo.productModel, deviceInfo.versionId, i18n.getSystemLanguage());
+  //$${entryAbilityonWindowStageCreateAdditions}$$
+  }
+
+  onWindowStageDestroy() {
+    // Main window is destroyed, release UI related resources
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageDestroy');
+    //$${entryAbilityonWindowStageDestroyAdditions}$$
+  }
+
+  onForeground() {
+    // Ability has brought to foreground
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onForeground');
+    //$${entryAbilityonForegroundAdditions}$$	
+    nativeAppLifecycle.Napi_onShow();
+  }
+
+  onBackground() {
+    // Ability has back to background
+    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onBackground');
+    //$${entryAbilityonBackgroundAdditions}$$	
+    nativeAppLifecycle.Napi_onHide();
+  }
+
+  onConfigurationUpdate(newConfig: Configuration): void {
+    let bPortrait = newConfig.direction == ConfigurationConstant.Direction.DIRECTION_VERTICAL
+    let displayClass = display.getDefaultDisplaySync();
+    //$${entryAbilityonConfigurationUpdateAdditions}$$
+    nativeRender.nativeOnWindowSizeChange(displayClass.width, displayClass.height);
+    nativeRender.Napi_nativeOnConfigurationChanged(bPortrait);
+  }  
+   NativeSetAvoidArea(avoidArea: window.AvoidArea): void {
+        let displayObj: display.Display = display.getDefaultDisplaySync();
+        let invX: number = 1.0 / (displayObj.width != 0 ? displayObj.width : 1);
+        let invY: number = 1.0 / (displayObj.height != 0 ? displayObj.height : 1);
+        let left: number =
+          (avoidArea.leftRect.left == 0 ? 0 : avoidArea.leftRect.left + avoidArea.leftRect.width) * invX;
+        let top: number = (avoidArea.topRect.top == 0 ? 0 : avoidArea.topRect.top + avoidArea.topRect.height) * invY;
+        let right: number = (avoidArea.rightRect.left == 0 ? 0 : displayObj.width - avoidArea.rightRect.left) * invX;
+        let bottom: number =
+          (avoidArea.bottomRect.top == 0 ? 0 : displayObj.height - avoidArea.bottomRect.top) * invY;
+        nativeRender.Napi_nativeSetSafezoneInfo(displayObj.height > displayObj.width, left, top, right, bottom);
+      }
+//$${entryAbilityClassAdditions}$$
+};
+
+//$${entryAbilityExternalClassAdditions}$$

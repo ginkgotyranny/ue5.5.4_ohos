@@ -1,0 +1,111 @@
+import nativeRender from "libNativeGlue.so";
+import { MessageBox } from '../MessageBox/MessageBox';
+import { WebView } from '../webview/WebView';
+import { Display } from "../Display/Display";
+import { Vibrator } from "../vibrator/Vibrator";
+import { Network } from "../Network/Network";
+import { BatteryInfo } from "../batteryInfo/batteryInfo";
+import CCDialogUtils from './DialogUtils';
+import { SDKManagerMsg }   from '../SDK/SDKManagerMsg';
+import { LaunchURL, ForceQuit, ForceRestart }   from './StartAbility';
+import { ConsoleDialogWindow } from "../ConsoleWindow/ConsoleDialogWindow"
+import { VirtualKeyboard } from '../VirtualKeyboard/VirtualKeyboard';
+import { PasteboardAccess } from '../Pasteboard/PasteboardAccess';
+import { SensorManager } from '../sensor/Sensor';
+import EtsBundleManager from './EtsBundleManager';
+import PermissionsController from './PermissionsController';
+import { Information } from './Information';
+
+//$${AkiJSBindImportAdditions}$$
+
+export class AkiJSBind {
+	//C++调用UI线程(MainThread)的JS函数在此处绑定
+	static MainThreadBindAki() {
+
+		//MessageBox
+		nativeRender.JSBind.bindFunction("MessageBox.setCaption", MessageBox.setCaption);
+		nativeRender.JSBind.bindFunction("MessageBox.setText", MessageBox.setText);
+		nativeRender.JSBind.bindFunction("MessageBox.addButton", MessageBox.addButton);
+		nativeRender.JSBind.bindFunction("MessageBox.clear", MessageBox.clear);
+		nativeRender.JSBind.bindFunction("MessageBox.show", MessageBox.show);
+
+		// WebView
+		nativeRender.JSBind.bindFunction("WebView.createWebView", WebView.createWebView);
+		nativeRender.JSBind.bindFunction("WebView.removeWebView", WebView.removeWebView);
+		nativeRender.JSBind.bindFunction("WebView.loadURL", WebView.loadURL);
+		nativeRender.JSBind.bindFunction("WebView.setWebViewRect", WebView.setWebViewRect);
+		nativeRender.JSBind.bindFunction("WebView.evaluateJS", WebView.evaluateJS);
+		nativeRender.JSBind.bindFunction("WebView.stopLoading", WebView.stopLoading);
+		nativeRender.JSBind.bindFunction("WebView.reload", WebView.reload);
+
+		// Vibrate
+		nativeRender.JSBind.bindFunction("Vibrator.Vibrate", Vibrator.Vibrate);
+
+		// LoginSDK && PaySDK
+		nativeRender.JSBind.bindFunction("SDKManagerMsg.handlePullSDK", SDKManagerMsg.handlePullSDK);
+
+		// LaunchURL
+		nativeRender.JSBind.bindFunction("LaunchURL", LaunchURL);
+		
+		nativeRender.JSBind.bindFunction("ForceQuit", ForceQuit);
+
+		nativeRender.JSBind.bindFunction("Restart", ForceRestart);
+		
+		nativeRender.JSBind.bindFunction("Display.GetRefreshRate", Display.GetRefreshRate);
+		nativeRender.JSBind.bindFunction("Display.GetDevicePhysicalSizeInInch", Display.GetDevicePhysicalSizeInInch);
+		nativeRender.JSBind.bindFunction("Display.SetOrientation", Display.SetOrientation);
+		
+		// 权限申请
+        nativeRender.JSBind.bindFunction("PermissionsController.reqPermissionsFromUser", PermissionsController.reqPermissionsFromUser);
+        nativeRender.JSBind.bindFunction("PermissionsController.checkPermissionsFromUser", PermissionsController.checkPermissionsFromUser);
+        nativeRender.JSBind.bindFunction("PermissionsController.openPermissionsSetting", PermissionsController.openPermissionsSetting);
+
+		// Pasteboard
+		nativeRender.JSBind.bindFunction("OpenHarmonyGetPasteboardData", PasteboardAccess.OpenHarmonyGetPasteboardData);
+
+		//OpenHarmonyId
+		nativeRender.JSBind.bindFunction("requestOAIDTrackingConsentPermissions", Information.requestOAIDTrackingConsentPermissions);
+
+		nativeRender.JSBind.bindFunction("OpenHarmonySetPasteboardData", PasteboardAccess.OpenHarmonySetPasteboardData);
+        		
+		//$${AkiJSBindMainThreadAdditions}$$
+
+		console.log(`AkiJSBind.mainthread is success!`);
+
+	}
+
+	//C++调用worker线程的JS函数在此处绑定
+	static UeWorkerBindAki() {
+		//nativeRender.JSBind.bindFunction(name : 方法名， function :方法);
+
+		// splash
+		nativeRender.JSBind.bindFunction("CCDialogUtils.closeSplashDialog", CCDialogUtils.closeSplashDialog);
+
+		//VirtualKeyboard;
+		nativeRender.JSBind.bindFunction("OpenHarmonyShowVirtualKeyboardInputDialog", VirtualKeyboard.OpenHarmonyShowVirtualKeyboardInputDialog);
+		nativeRender.JSBind.bindFunction("OpenHarmonyHideVirtualKeyboardInputDialog", VirtualKeyboard.OpenHarmonyHideVirtualKeyboardInputDialog);
+
+		//四指下拉调出ConsoleWindow
+		nativeRender.JSBind.bindFunction("ShowConsoleWindow", ConsoleDialogWindow.ShowConsoleWindow);
+
+		// batteryInfo
+		nativeRender.JSBind.bindFunction("BatteryInfo.GetBatteryTemperature", BatteryInfo.GetBatteryTemperature);
+		nativeRender.JSBind.bindFunction("BatteryInfo.GetBatteryChargeState", BatteryInfo.GetBatteryChargeState);
+		nativeRender.JSBind.bindFunction("BatteryInfo.GetBatterySoC", BatteryInfo.GetBatterySoC);
+
+		// Network
+		nativeRender.JSBind.bindFunction("Network.GetNetworkConnectionType", Network.GetNetworkConnectionType);
+		
+		// sensor
+        nativeRender.JSBind.bindFunction("Sensor.PushSensorEvents", SensorManager.PushSensorEvents);
+
+		//$${AkiJSBindUeWorkerAdditions}$$
+		
+		//MetaData
+        nativeRender.JSBind.bindFunction("EtsBundleManager.getMetaDataString",EtsBundleManager.GetMetaDataString)
+        		
+        //$${AkiJSBindUeWorkerAdditions}$$
+		
+		console.log(`AkiJSBind.UeWorker is success!`);
+	}
+}

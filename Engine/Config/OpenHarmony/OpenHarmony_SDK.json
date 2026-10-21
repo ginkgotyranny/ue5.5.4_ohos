@@ -1,0 +1,9 @@
+{
+	"MainVersion": "12",
+	"MinVersion": "12",
+	"MaxVersion": "12",
+	"platforms": "openharmony",
+	"build-tools": "33.0.1",
+	"cmake": "3.22.1",
+	"ndk": "25.1.8937393"
+}

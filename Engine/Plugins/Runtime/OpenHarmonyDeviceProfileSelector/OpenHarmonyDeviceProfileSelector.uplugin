@@ -1,0 +1,39 @@
+{
+	"FileVersion" : 3,
+	"Version" : 1,
+	"VersionName" : "1.0",
+	"FriendlyName" : "OpenHarmony Device Profile Selector",
+	"Description" : "OpenHarmony Device Profile Selector used show selection of device profiles on hardware",
+	"Category" : "Device Profile Selectors",
+	"CreatedBy" : "Epic Games, Inc.",
+	"CreatedByURL" : "https://epicgames.com",
+	"DocsURL" : "",
+	"MarketplaceURL" : "",
+	"SupportURL" : "",
+	"EnabledByDefault" : true,
+	"CanContainContent" : false,
+	"IsBetaVersion" : false,
+	"Installed" : false,
+	"Modules" :
+	[
+		{
+			"Name" : "OpenHarmonyDeviceProfileSelector",
+			"Type": "Editor",
+			"LoadingPhase" : "None"
+		},
+		{
+			"Name": "OpenHarmonyDeviceProfileCommandlets",
+			"Type": "Editor",
+			"LoadingPhase": "None"
+		},
+		{
+			"Name" : "OpenHarmonyDeviceProfileSelectorRuntime",
+			"Type" : "RuntimeNoCommandlet",
+			"LoadingPhase" : "PostConfigInit",
+			"PlatformAllowList" :
+			[
+				"OpenHarmony"
+			]
+		}
+	]
+}

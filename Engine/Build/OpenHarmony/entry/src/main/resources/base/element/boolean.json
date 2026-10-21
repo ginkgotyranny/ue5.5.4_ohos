@@ -1,0 +1,8 @@
+{
+  "boolean": [
+    {
+      "name": "bUseSplash",
+      "value": false
+    }
+  ]
+}

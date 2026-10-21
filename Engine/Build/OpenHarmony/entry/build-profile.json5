@@ -1,0 +1,45 @@
+{
+  "apiType": 'stageMode',
+  "buildOption": {
+    "externalNativeOptions": {
+      "path": "./src/main/cpp/CMakeLists.txt",
+      "arguments": "",
+		"abiFilters": [
+			"arm64-v8a"
+		],
+      "cppFlags": "",
+	},
+	"nativeLib": {
+      "debugSymbol": {
+        "strip": true,
+        "exclude": []
+      }
+    },
+	  "sourceOption": {
+		  "workers": [
+			  "./src/main/ets/workers/UeWorker.ets",
+			  "./src/main/ets/workers/AkiWorker.ets"
+		  ]
+	  }
+  },
+  "buildOptionSet": [
+    {
+      "name": "release",
+      "arkOptions": {
+        "obfuscation": {
+          "ruleOptions": {
+            "enable": true,
+            "files": [
+              "./obfuscation-rules.txt"
+            ]
+          }
+        }
+      }
+    },
+  ],
+  "targets": [
+    {
+      "name": "default"
+    }
+  ]
+}
