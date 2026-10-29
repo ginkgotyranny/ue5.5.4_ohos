@@ -3905,12 +3905,37 @@ void GlobalBeginCompileShader(
 	SET_SHADER_DEFINE(Input.Environment, PLATFORM_SUPPORTS_BARYCENTRICS_SEMANTIC, FDataDrivenShaderPlatformInfo::GetSupportsBarycentricsSemantic(EShaderPlatform(Target.Platform)) != ERHIFeatureSupport::Unsupported);
 
 	bool bEnableBindlessMacro = false;
+	// Probe: bindless gate state for ray tracing shaders (mobile RT bring-up)
+	// support: 0=Unsupported 1=RayTracingOnly 2=AllShaderTypes; cfg: 0=Disabled 1=AllShaders 2=RayTracingShaders
+	if (IsRayTracingShaderFrequency(Input.Target.GetFrequency()))
+	{
+		UE_LOG(LogShaderCompilers, Warning, TEXT("RT bindless probe: platform=%d format=%s support=%d resCfg=%d sampCfg=%d"),
+			(int32)ShaderPlatform, *ShaderFormatName.ToString(),
+			(int32)RHIGetBindlessSupport(ShaderPlatform),
+			(int32)UE::ShaderCompiler::GetBindlessResourcesConfiguration(ShaderFormatName),
+			(int32)UE::ShaderCompiler::GetBindlessSamplersConfiguration(ShaderFormatName));
+	}
 	if (RHIGetBindlessSupport(ShaderPlatform) != ERHIBindlessSupport::Unsupported && !Input.Environment.CompilerFlags.Contains(CFLAG_ForceBindful))
 	{
 		const bool bIsRaytracingShader = IsRayTracingShaderFrequency(Input.Target.GetFrequency());
 
-		const ERHIBindlessConfiguration ResourcesConfig = UE::ShaderCompiler::GetBindlessResourcesConfiguration(ShaderFormatName);
-		const ERHIBindlessConfiguration SamplersConfig = UE::ShaderCompiler::GetBindlessSamplersConfiguration(ShaderFormatName);
+		ERHIBindlessConfiguration ResourcesConfig = UE::ShaderCompiler::GetBindlessResourcesConfiguration(ShaderFormatName);
+		ERHIBindlessConfiguration SamplersConfig = UE::ShaderCompiler::GetBindlessSamplersConfiguration(ShaderFormatName);
+
+		// Vulkan RT hit-group shaders require full bindless (descriptor heaps). On Vulkan mobile SM5
+		// (Android) apply the RayTracingShaders bindless configuration regardless of per-format config
+		// lookups, which do not resolve when cross-compiling from another host platform.
+		if (IsVulkanMobileSM5Platform(ShaderPlatform))
+		{
+			if (ResourcesConfig == ERHIBindlessConfiguration::Disabled)
+			{
+				ResourcesConfig = ERHIBindlessConfiguration::RayTracingShaders;
+			}
+			if (SamplersConfig == ERHIBindlessConfiguration::Disabled)
+			{
+				SamplersConfig = ERHIBindlessConfiguration::RayTracingShaders;
+			}
+		}
 
 		if (ResourcesConfig == ERHIBindlessConfiguration::AllShaders || (ResourcesConfig == ERHIBindlessConfiguration::RayTracingShaders && bIsRaytracingShader))
 		{
@@ -3925,6 +3950,11 @@ void GlobalBeginCompileShader(
 			Input.Environment.CompilerFlags.Add(CFLAG_BindlessSamplers);
 			SET_SHADER_DEFINE(Input.Environment, ENABLE_BINDLESS_SAMPLERS, true);
 		}
+
+		// Platforms that keep UAVs as classic descriptor bindings (dxc -> SPIR-V rejects arrays of
+		// RW structured buffers) must not generate bindless heap accessors for UAV members.
+		SET_SHADER_DEFINE(Input.Environment, PLATFORM_SUPPORTS_BINDLESS_UAVS, IsVulkanMobileSM5Platform(ShaderPlatform) ? 0 : 1);
+
 	}
 
 	SET_SHADER_DEFINE(Input.Environment, PLATFORM_SUPPORTS_BINDLESS, bEnableBindlessMacro);

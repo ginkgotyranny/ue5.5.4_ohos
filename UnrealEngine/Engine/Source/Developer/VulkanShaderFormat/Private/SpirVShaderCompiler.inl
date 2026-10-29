@@ -698,8 +698,11 @@ static bool BuildShaderOutputFromSpirv(
 		{
 			for (const SpvReflectDescriptorBinding* Binding : BindingArray)
 			{
-				checkf(!InternalState.bSupportsBindless || (DescriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER),
-					TEXT("Bindless shaders should only have uniform buffers."));
+				// Classic storage bindings are also valid in bindless shaders on platforms that keep
+				// UAVs as regular descriptors (dxc -> SPIR-V rejects arrays of RW structured buffers).
+				checkf(!InternalState.bSupportsBindless ||
+					(DescriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER || DescriptorType == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER || DescriptorType == VK_DESCRIPTOR_TYPE_STORAGE_IMAGE || DescriptorType == VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER),
+					TEXT("Bindless shaders should only have uniform buffers or classic storage bindings."));
 
 				const FString ResourceName(ANSI_TO_TCHAR(Binding->name));
 

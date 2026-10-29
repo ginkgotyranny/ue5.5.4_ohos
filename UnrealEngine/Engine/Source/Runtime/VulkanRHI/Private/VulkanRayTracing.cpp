@@ -905,13 +905,14 @@ FVulkanRayTracingShaderTable::FVulkanRayTracingShaderTable(FRHICommandListBase& 
 		InitAlloc(HitGroup, NumHitGroupRecords, true);
 	}
 
-	if (EnumHasAnyFlags(ShaderBindingMode, ERayTracingShaderBindingMode::Inline) && Initializer.NumGeometrySegments > 0)
+	if (EnumHasAnyFlags(ShaderBindingMode, ERayTracingShaderBindingMode::Inline))
 	{
 		// Doesn't make sense to have inline SBT without hitgroup indexing
 		check(HitGroupIndexingMode == ERayTracingHitGroupIndexingMode::Allow);
 
-		const uint32 ParameterBufferSize = Initializer.NumGeometrySegments * sizeof(FVulkanRayTracingGeometryParameters);
-		InlineGeometryParameterData.SetNumUninitialized(ParameterBufferSize);
+		const uint32 NumSegments = FMath::Max(1u, Initializer.NumGeometrySegments);
+		const uint32 ParameterBufferSize = NumSegments * sizeof(FVulkanRayTracingGeometryParameters);
+		InlineGeometryParameterData.SetNumZeroed(ParameterBufferSize);
 		
 		FRHIResourceCreateInfo ParameterBufferCreateInfo(TEXT("RayTracingSceneMetadata"));
 		InlineGeometryParameterBuffer = ResourceCast(RHICmdList.CreateBuffer(ParameterBufferSize, BUF_Dynamic | BUF_StructuredBuffer | BUF_ShaderResource, sizeof(FVulkanRayTracingGeometryParameters), ERHIAccess::SRVMask, ParameterBufferCreateInfo).GetReference());
@@ -1017,7 +1018,7 @@ FRHIShaderResourceView* FVulkanRayTracingShaderTable::GetOrCreateInlineBufferSRV
 
 FRHIShaderResourceView* FVulkanRayTracingShaderTable::GetOrCreateInlineBufferSRV(FRHICommandListBase& RHICmdList)
 {
-	if (!InlineGeometryParameterSRV.IsValid())
+	if (!InlineGeometryParameterSRV.IsValid() && InlineGeometryParameterBuffer.IsValid())
 	{
 		InlineGeometryParameterSRV = RHICmdList.CreateShaderResourceView(InlineGeometryParameterBuffer.GetReference(), FRHIViewDesc::CreateBufferSRV().SetType(FRHIViewDesc::EBufferType::Structured));
 	}

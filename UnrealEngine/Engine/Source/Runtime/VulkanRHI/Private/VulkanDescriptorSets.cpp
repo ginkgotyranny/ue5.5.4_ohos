@@ -228,7 +228,13 @@ bool FVulkanBindlessDescriptorManager::VerifySupport(FVulkanDevice* Device)
 		(RHIGetRuntimeBindlessResourcesConfiguration(GMaxRHIShaderPlatform) == ERHIBindlessConfiguration::AllShaders) &&
 		(RHIGetRuntimeBindlessSamplersConfiguration(GMaxRHIShaderPlatform) == ERHIBindlessConfiguration::AllShaders);
 
-	if (bFullyEnabled)
+	// RayTracingShaders-only bindless also needs the manager initialized: shaders compiled with
+	// bindless layouts (RT hit groups) require the descriptor heaps even if other shaders stay bindful.
+	const bool bRayTracingOnly =
+		(RHIGetRuntimeBindlessResourcesConfiguration(GMaxRHIShaderPlatform) == ERHIBindlessConfiguration::RayTracingShaders) ||
+		(RHIGetRuntimeBindlessSamplersConfiguration(GMaxRHIShaderPlatform) == ERHIBindlessConfiguration::RayTracingShaders);
+
+	if (bFullyEnabled || bRayTracingOnly)
 	{
 		const VkPhysicalDeviceProperties& GpuProps = Device->GetDeviceProperties();
 		const FOptionalVulkanDeviceExtensions& OptionalDeviceExtensions = Device->GetOptionalExtensions();

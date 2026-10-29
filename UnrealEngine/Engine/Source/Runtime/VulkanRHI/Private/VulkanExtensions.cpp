@@ -905,6 +905,13 @@ public:
 		if (bRequirementsPassed)
 		{
 			AddToPNext(DeviceCreateInfo, AccelerationStructureFeatures);
+
+			// Probe: acceleration structure features (mobile RT pipeline bring-up)
+			UE_LOG(LogVulkanRHI, Display, TEXT("RT probe: accelStructure=%d indirectBuild=%d hostCommands=%d descriptorBindingUpdateAfterBind=%d"),
+				(int32)AccelerationStructureFeatures.accelerationStructure,
+				(int32)AccelerationStructureFeatures.accelerationStructureIndirectBuild,
+				(int32)AccelerationStructureFeatures.accelerationStructureHostCommands,
+				(int32)AccelerationStructureFeatures.descriptorBindingAccelerationStructureUpdateAfterBind);
 		}
 	}
 
@@ -953,6 +960,23 @@ public:
 			AddToPNext(DeviceCreateInfo, RayTracingPipelineFeatures);
 
 			GRHISupportsRayTracingDispatchIndirect = (RayTracingPipelineFeatures.rayTracingPipelineTraceRaysIndirect == VK_TRUE);
+
+			// Probe: device ray tracing pipeline capabilities (mobile RT pipeline bring-up)
+			const VkPhysicalDeviceRayTracingPipelinePropertiesKHR& RTProps = GetDeviceExtensionProperties().RayTracingPipelineProps;
+			UE_LOG(LogVulkanRHI, Display, TEXT("RT probe: rayTracingPipeline=%d traceRaysIndirect=%d primitiveCulling=%d handleCaptureReplay=%d captureReplayMixed=%d"),
+				(int32)RayTracingPipelineFeatures.rayTracingPipeline,
+				(int32)RayTracingPipelineFeatures.rayTracingPipelineTraceRaysIndirect,
+				(int32)RayTracingPipelineFeatures.rayTraversalPrimitiveCulling,
+				(int32)RayTracingPipelineFeatures.rayTracingPipelineShaderGroupHandleCaptureReplay,
+				(int32)RayTracingPipelineFeatures.rayTracingPipelineShaderGroupHandleCaptureReplayMixed);
+			UE_LOG(LogVulkanRHI, Display, TEXT("RT probe: shaderGroupHandleSize=%u maxRayRecursionDepth=%u maxShaderGroupStride=%u shaderGroupBaseAlignment=%u shaderGroupHandleAlignment=%u maxRayDispatchInvocationCount=%u maxRayHitAttributeSize=%u"),
+				RTProps.shaderGroupHandleSize,
+				RTProps.maxRayRecursionDepth,
+				RTProps.maxShaderGroupStride,
+				RTProps.shaderGroupBaseAlignment,
+				RTProps.shaderGroupHandleAlignment,
+				RTProps.maxRayDispatchInvocationCount,
+				RTProps.maxRayHitAttributeSize);
 		}
 	}
 

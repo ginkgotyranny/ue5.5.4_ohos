@@ -117,6 +117,12 @@ public:
 		return bEnableRayTracing;
 	}
 
+	virtual ERayTracingRuntimeMode GetRayTracingMode() const override
+	{
+		// Report Full when ray tracing is enabled so RT pipeline shaders are compiled for OpenHarmony Vulkan SM5
+		return UsesRayTracing() ? ERayTracingRuntimeMode::Full : ERayTracingRuntimeMode::Disabled;
+	}
+
 #if WITH_ENGINE
 	virtual void GetReflectionCaptureFormats(TArray<FName>& OutFormats) const override;
 	virtual const UTextureLODSettings& GetTextureLODSettings() const override;

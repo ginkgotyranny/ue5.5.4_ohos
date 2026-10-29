@@ -7,7 +7,7 @@
 #pragma once
 
 // Update this GUID to invalidate shader recompilation for only Vulkan shaders
-#pragma message("UESHADERMETADATA_VERSION 368AA5D0-57AB-4A02-BE50-0E3432A4820D")
+#pragma message("UESHADERMETADATA_VERSION 368AA5D0-57AB-4A02-BE50-0E3432A4821D")
 
 #define COMPILER_SUPPORTS_ULONG_TYPES 1
 #define COMPILER_SUPPORTS_UINT64_IMAGE_ATOMICS (1 && COMPILER_SUPPORTS_ULONG_TYPES)
@@ -62,13 +62,23 @@ void ImageInterlockedAddUInt64(RWTexture2D<UlongType> Dest, uint2 Coord, UlongTy
 		} \
 		static const Type UBName##_##Name = GetBindlessResource##UBName##_##Name();
 
-	#define UB_RESOURCE_MEMBER_UAV(Type, UBName, Name) \
-		typedef Type SafeType##UBName##_##Name; \
-		SafeType##UBName##_##Name VULKAN_UAV_HEAP(SafeType##UBName##_##Name)[]; \
-		Type GetBindlessResource##UBName##_##Name() { \
-			return VULKAN_UAV_HEAP(SafeType##UBName##_##Name)[VULKAN_HEAP_ACCESS(UB_CB_PREFIXED_MEMBER_ACCESS(UBName, BindlessUAV_, Name))]; \
-		} \
-		static const Type UBName##_##Name = GetBindlessResource##UBName##_##Name();
+	#ifndef PLATFORM_SUPPORTS_BINDLESS_UAVS
+		#define PLATFORM_SUPPORTS_BINDLESS_UAVS 1
+	#endif
+
+	// Platforms whose shader compiler rejects arrays of RW structured buffers (dxc -> SPIR-V)
+	// keep UAV members as classic descriptor bindings.
+	#if PLATFORM_SUPPORTS_BINDLESS_UAVS
+		#define UB_RESOURCE_MEMBER_UAV(Type, UBName, Name) \
+			typedef Type SafeType##UBName##_##Name; \
+			SafeType##UBName##_##Name VULKAN_UAV_HEAP(SafeType##UBName##_##Name)[]; \
+			Type GetBindlessResource##UBName##_##Name() { \
+				return VULKAN_UAV_HEAP(SafeType##UBName##_##Name)[VULKAN_HEAP_ACCESS(UB_CB_PREFIXED_MEMBER_ACCESS(UBName, BindlessUAV_, Name))]; \
+			} \
+			static const Type UBName##_##Name = GetBindlessResource##UBName##_##Name();
+	#else
+		#define UB_RESOURCE_MEMBER_UAV(Type, UBName, Name) Type UBName##_##Name
+	#endif
 
 	#define UB_RESOURCE_MEMBER_SAMPLER(Type, UBName, Name) \
 		typedef Type SafeType##UBName##_##Name; \

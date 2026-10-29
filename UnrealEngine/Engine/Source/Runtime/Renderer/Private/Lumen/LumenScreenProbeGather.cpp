@@ -27,6 +27,13 @@ FAutoConsoleVariableRef GVarLumenScreenProbeGather(
 	ECVF_Scalability | ECVF_RenderThreadSafe
 );
 
+int32 GLumenSkipDiffuseIndirectGather = 1;
+FAutoConsoleVariableRef CVarLumenSkipDiffuseIndirectGather(
+	TEXT("r.Lumen.SkipDiffuseIndirectGather"),
+	GLumenSkipDiffuseIndirectGather,
+	TEXT("Skip all Lumen GI gather computation while keeping reflections functional. 0=normal, 1=skip GI"),
+	ECVF_RenderThreadSafe
+);
 FAutoConsoleVariableRef CVarLumenScreenProbeGatherTraceMeshSDFs(
 	TEXT("r.Lumen.ScreenProbeGather.TraceMeshSDFs"),
 	GLumenGatherCvars.TraceMeshSDFs,
@@ -1783,6 +1790,19 @@ FSSDSignalTextures FDeferredShadingSceneRenderer::RenderLumenFinalGather(
 	FSSDSignalTextures Outputs;
 	LumenRadianceCache::FRadianceCacheInterpolationParameters TranslucencyVolumeRadianceCacheParameters;
 
+	if (GLumenSkipDiffuseIndirectGather)
+	{
+		FSSDSignalTextures BypassOutputs;
+		BypassOutputs.Textures[0] = SystemTextures.Black;
+		BypassOutputs.Textures[1] = SystemTextures.Black;
+		FRDGTextureDesc Desc = FRDGTextureDesc::Create2D(
+			SceneTextures.Config.Extent, PF_FloatRGB,
+			FClearValueBinding::Black,
+			TexCreate_ShaderResource | TexCreate_UAV);
+		BypassOutputs.Textures[2] = GraphBuilder.CreateTexture(Desc, TEXT("Lumen.SkipGI.RoughSpecularIndirect"));
+		AddClearUAVPass(GraphBuilder, GraphBuilder.CreateUAV(FRDGTextureUAVDesc(BypassOutputs.Textures[2])), FLinearColor::Black);
+		return BypassOutputs;
+	}
 	if (GLumenIrradianceFieldGather != 0)
 	{
 		Outputs = RenderLumenIrradianceFieldGather(GraphBuilder, SceneTextures, FrameTemporaries, View, TranslucencyVolumeRadianceCacheParameters, ComputePassFlags);

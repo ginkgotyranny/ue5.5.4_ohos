@@ -2971,7 +2971,9 @@ namespace UnrealBuildTool
 			string StartupPermissions = "";
 			if (TargetSDKVersion >= 23)
 			{
-				if (Configuration != "Shipping" || !bUseExternalFilesDir)
+				// WRITE_EXTERNAL_STORAGE is auto-denied by Android when targeting API 33+, and cannot be
+				// granted manually in settings on those devices, so only require it where it can be granted
+				if (TargetSDKVersion < 33 && (Configuration != "Shipping" || !bUseExternalFilesDir))
 				{
 					StartupPermissions = StartupPermissions + (StartupPermissions.Length > 0 ? "," : "") + "android.permission.WRITE_EXTERNAL_STORAGE";
 				}

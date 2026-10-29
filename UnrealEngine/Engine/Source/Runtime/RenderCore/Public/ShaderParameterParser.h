@@ -70,6 +70,15 @@ public:
 			return FString();
 		}
 
+		/** Whether UAV parameters should be converted to bindless heap access. Platforms whose
+		 *  shader compiler rejects arrays of RW structured buffers (dxc -> SPIR-V) must keep UAVs
+		 *  as classic descriptor bindings. */
+		virtual bool AllowBindlessUAVConversion() const
+		{
+			return true;
+		}
+
+
 		TConstArrayView<FStringView> ExtraSRVTypes;
 		TConstArrayView<FStringView> ExtraUAVTypes;
 		FStringView ConstantBufferType;

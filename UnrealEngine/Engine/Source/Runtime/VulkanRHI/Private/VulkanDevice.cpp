@@ -482,12 +482,12 @@ void FVulkanDevice::SetupDrawMarkers()
 	if (RHI->SupportsDebugUtilsExt())
 	{
 		// HOTFIX for UE-218250: Disable vulkan draw markers to get around crash/performance issues
-		if (FParse::Param(FCommandLine::Get(), TEXT("forcevulkanddrawmarkers")))
-		{
+		// if (FParse::Param(FCommandLine::Get(), TEXT("forcevulkanddrawmarkers")))
+		// {
 			DebugMarkers.CmdBeginDebugLabel = (PFN_vkCmdBeginDebugUtilsLabelEXT)(void*)VulkanRHI::vkGetInstanceProcAddr(RHI->GetInstance(), "vkCmdBeginDebugUtilsLabelEXT");
 			DebugMarkers.CmdEndDebugLabel = (PFN_vkCmdEndDebugUtilsLabelEXT)(void*)VulkanRHI::vkGetInstanceProcAddr(RHI->GetInstance(), "vkCmdEndDebugUtilsLabelEXT");
 			DebugMarkers.SetDebugName = (PFN_vkSetDebugUtilsObjectNameEXT)(void*)VulkanRHI::vkGetInstanceProcAddr(RHI->GetInstance(), "vkSetDebugUtilsObjectNameEXT");
-		}
+		// }
 
 		if (DebugMarkers.CmdBeginDebugLabel && DebugMarkers.CmdEndDebugLabel && DebugMarkers.SetDebugName)
 		{
@@ -1221,6 +1221,22 @@ void FVulkanDevice::InitGPU()
 
 	BindlessDescriptorManager = new FVulkanBindlessDescriptorManager(this);
 	BindlessDescriptorManager->Init();
+
+	// Probe: limits relevant to Vulkan bindless (descriptor buffer) requirements for RT pipeline (mobile RT bring-up)
+	{
+		const VkPhysicalDeviceProperties& ProbeGpuProps = GetDeviceProperties();
+		const VkPhysicalDeviceDescriptorBufferPropertiesEXT& ProbeDescBufProps = GetOptionalExtensionProperties().DescriptorBufferProps;
+		UE_LOG(LogVulkanRHI, Display, TEXT("RT probe: maxBoundDescriptorSets=%u maxDescriptorBufferBindings=%u maxResourceDescriptorBufferBindings=%u maxSamplerDescriptorBufferBindings=%u (bindless needs %u sets)"),
+			ProbeGpuProps.limits.maxBoundDescriptorSets,
+			ProbeDescBufProps.maxDescriptorBufferBindings,
+			ProbeDescBufProps.maxResourceDescriptorBufferBindings,
+			ProbeDescBufProps.maxSamplerDescriptorBufferBindings,
+			(uint32)VulkanBindless::MaxNumSets);
+		UE_LOG(LogVulkanRHI, Display, TEXT("RT probe: runtime bindless resources=%d samplers=%d (1=AllShaders,0=Disabled), Device->SupportsBindless=%d"),
+			(int32)RHIGetRuntimeBindlessResourcesConfiguration(GMaxRHIShaderPlatform),
+			(int32)RHIGetRuntimeBindlessSamplersConfiguration(GMaxRHIShaderPlatform),
+			SupportsBindless() ? 1 : 0);
+	}
 
 	PipelineStateCache = new FVulkanPipelineStateCacheManager(this);
 

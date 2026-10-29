@@ -258,6 +258,16 @@ struct FVulkanShaderParameterParserPlatformConfiguration : public FShaderParamet
 		{
 			EnumAddFlags(Flags, EShaderParameterParserConfigurationFlags::ReplaceGlobals);
 		}
+
+		// The DXC version shipped with the engine rejects arrays of RW/append/consume structured
+		// buffers when targeting SPIR-V (all stages). Keep UAVs as classic descriptor bindings on
+		// Android/OpenHarmony so RT-pipeline shaders with UAV writes can compile; SRVs/samplers/UBs stay bindless.
+		bAndroidFormat = IsAndroidShaderFormat(Input.ShaderFormat) || IsOpenHarmonyShaderFormat(Input.ShaderFormat);
+	}
+
+	virtual bool AllowBindlessUAVConversion() const final
+	{
+		return !bAndroidFormat;
 	}
 	virtual FString GenerateBindlessAccess(EBindlessConversionType BindlessType, FStringView FullTypeString, FStringView ArrayNameOverride, FStringView IndexString) const final
 	{
@@ -300,6 +310,7 @@ struct FVulkanShaderParameterParserPlatformConfiguration : public FShaderParamet
 	}
 
 	const bool bIsRayTracingShader;
+	bool bAndroidFormat = false;
 	const FString HitGroupSystemIndexBufferName;
 	const FString HitGroupSystemVertexBufferName;
 	TMap<FStringView, FStringView>& ReplacedGlobals;

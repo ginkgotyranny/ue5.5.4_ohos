@@ -399,7 +399,7 @@ bool FShaderParameterParser::ParseParameters(
 						BindlessConversionType = EBindlessConversionType::SRV;
 						ParsedConstantBufferType = EShaderParameterType::BindlessSRV;
 					}
-					else if (bBindlessResources && ParsedParameterType == EShaderParameterType::UAV)
+					else if (bBindlessResources && ParsedParameterType == EShaderParameterType::UAV && PlatformConfiguration.AllowBindlessUAVConversion())
 					{
 						BindlessConversionType = EBindlessConversionType::UAV;
 						ParsedConstantBufferType = EShaderParameterType::BindlessUAV;
@@ -1010,8 +1010,11 @@ void FShaderParameterParser::ApplyBindlessModifications(FString& PreprocessedSha
 			}
 			else if (bReplaceGlobals)
 			{
-				const bool IsGlobalParam = 
+				const bool IsGlobalParam =
 					(ParsedParameter.BaseType == UBMT_INVALID) &&
+					// Resource declarations staying classic (e.g. UAVs on platforms without bindless
+					// UAV support) must keep their global declaration; only loose data moves to the shader record.
+					(ParsedParameter.ParsedTypeDecl == EShaderCodeResourceBindingType::Invalid) &&
 					!ParsedParameter.ParsedName.StartsWith(FShaderParameterParser::kBindlessSamplerArrayPrefix) &&
 					!ParsedParameter.ParsedName.StartsWith(FShaderParameterParser::kBindlessSRVArrayPrefix) &&
 					!ParsedParameter.ParsedName.StartsWith(FShaderParameterParser::kBindlessUAVArrayPrefix);

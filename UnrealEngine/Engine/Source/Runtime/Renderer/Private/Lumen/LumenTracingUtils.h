@@ -189,6 +189,7 @@ extern FLumenHZBScreenTraceParameters SetupHZBScreenTraceParameters(
 	const FSceneTextures& SceneTextures);
 
 extern int32 GLumenIrradianceFieldGather;
+extern int32 GLumenSkipDiffuseIndirectGather;
 
 namespace LumenIrradianceFieldGather
 {

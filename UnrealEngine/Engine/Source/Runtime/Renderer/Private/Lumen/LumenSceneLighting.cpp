@@ -252,7 +252,10 @@ void FDeferredShadingSceneRenderer::RenderLumenSceneLighting(
 		}
 
 		LumenRadiosity::FFrameTemporaries RadiosityFrameTemporaries;
-		LumenRadiosity::InitFrameTemporaries(GraphBuilder, LumenSceneData, ViewFamily, Views, RadiosityFrameTemporaries);
+		if (!GLumenSkipDiffuseIndirectGather)
+		{
+			LumenRadiosity::InitFrameTemporaries(GraphBuilder, LumenSceneData, ViewFamily, Views, RadiosityFrameTemporaries);
+		}
 
 		FLumenCardUpdateContext DirectLightingCardUpdateContext;
 		FLumenCardUpdateContext IndirectLightingCardUpdateContext;
@@ -280,12 +283,15 @@ void FDeferredShadingSceneRenderer::RenderLumenSceneLighting(
 			DirectLightingCardUpdateContext,
 			ComputePassFlags);
 
-		RenderRadiosityForLumenScene(
-			GraphBuilder,
-			FrameTemporaries,
-			RadiosityFrameTemporaries,
-			IndirectLightingCardUpdateContext,
-			ComputePassFlags);
+			if (!GLumenSkipDiffuseIndirectGather)
+			{
+				RenderRadiosityForLumenScene(
+					GraphBuilder,
+					FrameTemporaries,
+					RadiosityFrameTemporaries,
+					IndirectLightingCardUpdateContext,
+					ComputePassFlags);
+			}
 
 		LumenSceneData.bFinalLightingAtlasContentsValid = true;
 	}
