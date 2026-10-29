@@ -1602,7 +1602,9 @@ bool ShouldCompileRayTracingShadersForProject(EShaderPlatform ShaderPlatform)
 {
 	if (RHISupportsRayTracingShaders(ShaderPlatform))
 	{
-		return IsRayTracingEnabledForProject(ShaderPlatform) && AreRayTracingShadersEnabledForProject(ShaderPlatform) && IsFeatureLevelSupported(ShaderPlatform, ERHIFeatureLevel::SM6);
+		// Vulkan mobile SM5 (Android) supports RT pipeline shaders when the device exposes the required extensions
+		return IsRayTracingEnabledForProject(ShaderPlatform) && AreRayTracingShadersEnabledForProject(ShaderPlatform)
+			&& (IsFeatureLevelSupported(ShaderPlatform, ERHIFeatureLevel::SM6) || IsVulkanMobileSM5Platform(ShaderPlatform));
 	}
 	else
 	{
@@ -2095,7 +2097,7 @@ bool DoesPlatformSupportLumenGI(EShaderPlatform Platform, bool bSkipProjectCheck
 	#endif // WITH_EDITOR
 
 	const bool bMetalSM5 = Platform == SP_METAL_SM5 || ParentPreviewPlatform == SP_METAL_SM5;
-	const bool bVulkanSM5 = Platform == SP_VULKAN_SM5 || Platform == SP_VULKAN_SM5_ANDROID || ParentPreviewPlatform == SP_VULKAN_SM5 || ParentPreviewPlatform == SP_VULKAN_SM5_ANDROID;
+	const bool bVulkanSM5 = Platform == SP_VULKAN_SM5 || Platform == SP_VULKAN_SM5_ANDROID || Platform == SP_VULKAN_SM5_OPENHARMONY || ParentPreviewPlatform == SP_VULKAN_SM5 || ParentPreviewPlatform == SP_VULKAN_SM5_ANDROID || ParentPreviewPlatform == SP_VULKAN_SM5_OPENHARMONY;
 	return (bSkipProjectCheck || bLumenSupported)
 		&& FDataDrivenShaderPlatformInfo::GetSupportsLumenGI(Platform)
 		&& (IsFeatureLevelSupported(Platform, ERHIFeatureLevel::SM6) || bVulkanSM5 || bMetalSM5) // Android and Mac can't rely on SM6 yet, but want to run Lumen
