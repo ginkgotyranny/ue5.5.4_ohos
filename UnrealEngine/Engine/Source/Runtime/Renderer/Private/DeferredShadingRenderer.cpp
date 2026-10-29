@@ -5,6 +5,7 @@
 =============================================================================*/
 
 #include "DeferredShadingRenderer.h"
+#include "RenderCore.h"
 #include "BasePassRendering.h"
 #include "VelocityRendering.h"
 #include "SingleLayerWaterRendering.h"
@@ -3528,8 +3529,18 @@ void FDeferredShadingSceneRenderer::Render(FRDGBuilder& GraphBuilder)
 
 bool AnyRayTracingPassEnabled(const FScene* Scene, const FViewInfo& View)
 {
+	// RTDIAG: temporary bring-up logging, remove once ray tracing pipeline is verified on device
+	static uint32 GDiagCounter = 0;
+	const bool bLogDiag = GDiagCounter < 3 || (GDiagCounter % 600) == 0;
+	GDiagCounter++;
+
 	if (!IsRayTracingEnabled(View.GetShaderPlatform()) || Scene == nullptr)
 	{
+		if (bLogDiag)
+		{
+			UE_LOG(LogTemp, Display, TEXT("RTDIAG AnyRayTracingPassEnabled: early-out RTEnabled=%d SceneValid=%d => 0"),
+				(int32)IsRayTracingEnabled(View.GetShaderPlatform()), (int32)(Scene != nullptr));
+		}
 		return false;
 	}
 
@@ -3537,21 +3548,38 @@ bool AnyRayTracingPassEnabled(const FScene* Scene, const FViewInfo& View)
 	if (HasRayTracedOverlay(*View.Family)
 		|| ShouldRenderRayTracingSkyLight(Scene->SkyLight, View.GetShaderPlatform()))
 	{
+		if (bLogDiag)
+		{
+			UE_LOG(LogTemp, Display, TEXT("RTDIAG AnyRayTracingPassEnabled: forced by overlay/skylight => 1"));
+		}
 		return true;
 	}
 
 	if (!View.IsRayTracingAllowedForView())
 	{
+		if (bLogDiag)
+		{
+			UE_LOG(LogTemp, Display, TEXT("RTDIAG AnyRayTracingPassEnabled: !IsRayTracingAllowedForView => 0"));
+		}
 		return false;
 	}
 
-	return ShouldRenderRayTracingAmbientOcclusion(View)
-		|| ShouldRenderRayTracingTranslucency(View)
-		|| ShouldRenderRayTracingShadows(*View.Family)
-		|| Scene->bHasLightsWithRayTracedShadows
-		|| ShouldRenderPluginRayTracingGlobalIllumination(View)
-        || Lumen::AnyLumenHardwareRayTracingPassEnabled(Scene, View)
-		|| MegaLights::UseHardwareRayTracing(*View.Family);
+	const bool bAO = ShouldRenderRayTracingAmbientOcclusion(View);
+	const bool bTranslucency = ShouldRenderRayTracingTranslucency(View);
+	const bool bRTShadows = ShouldRenderRayTracingShadows(*View.Family);
+	const bool bLightsWithRTShadows = Scene->bHasLightsWithRayTracedShadows;
+	const bool bPluginGI = ShouldRenderPluginRayTracingGlobalIllumination(View);
+	const bool bLumenHWRT = Lumen::AnyLumenHardwareRayTracingPassEnabled(Scene, View);
+	const bool bMegaLights = MegaLights::UseHardwareRayTracing(*View.Family);
+	const bool bResult = bAO || bTranslucency || bRTShadows || bLightsWithRTShadows || bPluginGI || bLumenHWRT || bMegaLights;
+
+	if (bLogDiag)
+	{
+		UE_LOG(LogTemp, Display, TEXT("RTDIAG AnyRayTracingPassEnabled: AO=%d Translucency=%d RTShadows=%d LightsRTShadows=%d PluginGI=%d LumenHWRT=%d MegaLights=%d => %d"),
+			(int32)bAO, (int32)bTranslucency, (int32)bRTShadows, (int32)bLightsWithRTShadows, (int32)bPluginGI, (int32)bLumenHWRT, (int32)bMegaLights, (int32)bResult);
+	}
+
+	return bResult;
 }
 
 static bool ShouldRenderRayTracingEffectInternal(bool bEffectEnabled, ERayTracingPipelineCompatibilityFlags CompatibilityFlags)

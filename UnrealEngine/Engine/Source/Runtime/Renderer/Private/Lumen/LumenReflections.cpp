@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LumenReflections.h"
+#include "RenderCore.h"
 #include "RendererPrivate.h"
 #include "ScenePrivate.h"
 #include "SceneUtils.h"
@@ -548,16 +549,32 @@ bool ShouldRenderLumenReflections(const FSceneView& View, bool bSkipTracingDataC
 	const FScene* Scene = (const FScene*)View.Family->Scene;
 	if (Scene)
 	{
-		return Lumen::IsLumenFeatureAllowedForView(Scene, View, bSkipTracingDataCheck, bSkipProjectCheck) 
-			&& View.FinalPostProcessSettings.ReflectionMethod == EReflectionMethod::Lumen
-			&& View.Family->EngineShowFlags.LumenReflections 
-			&& CVarLumenAllowReflections.GetValueOnAnyThread()
-			&& (ShouldRenderLumenDiffuseGI(Scene, View, bSkipTracingDataCheck, bSkipProjectCheck)
-				// GRHISupportsRayTracingShaders is required for standalone Lumen Reflections because Lumen::LumenHardwareRayTracing::GetHitLightingMode forces hit lighting
-				|| (bIncludeStandalone && Lumen::UseHardwareRayTracedReflections(*View.Family) && GRHISupportsRayTracingShaders))
-			&& (bSkipTracingDataCheck || Lumen::UseHardwareRayTracedReflections(*View.Family) || Lumen::IsSoftwareRayTracingSupported());
+		const bool bLumenFeatureAllowed = Lumen::IsLumenFeatureAllowedForView(Scene, View, bSkipTracingDataCheck, bSkipProjectCheck);
+		const bool bReflectionMethodLumen = View.FinalPostProcessSettings.ReflectionMethod == EReflectionMethod::Lumen;
+		const bool bShowFlagLumenReflections = View.Family->EngineShowFlags.LumenReflections;
+		const bool bAllowReflectionsCVar = CVarLumenAllowReflections.GetValueOnAnyThread() != 0;
+		const bool bDiffuseGIAllowed = ShouldRenderLumenDiffuseGI(Scene, View, bSkipTracingDataCheck, bSkipProjectCheck);
+		// GRHISupportsRayTracingShaders is required for standalone Lumen Reflections because Lumen::LumenHardwareRayTracing::GetHitLightingMode forces hit lighting
+		const bool bStandaloneHWRT = bIncludeStandalone && Lumen::UseHardwareRayTracedReflections(*View.Family) && GRHISupportsRayTracingShaders;
+		const bool bTracingDataAvailable = bSkipTracingDataCheck || Lumen::UseHardwareRayTracedReflections(*View.Family) || Lumen::IsSoftwareRayTracingSupported();
+		const bool bResult = bLumenFeatureAllowed && bReflectionMethodLumen && bShowFlagLumenReflections && bAllowReflectionsCVar
+			&& (bDiffuseGIAllowed || bStandaloneHWRT)
+			&& bTracingDataAvailable;
+
+		// RTDIAG: temporary bring-up logging, remove once ray tracing pipeline is verified on device
+		static uint32 GDiagCounter = 0;
+		if (GDiagCounter < 3 || (GDiagCounter % 600) == 0)
+		{
+			UE_LOG(LogTemp, Display, TEXT("RTDIAG ShouldRenderLumenReflections(skipData=%d standalone=%d): FeatureAllowed=%d MethodLumen=%d ShowFlag=%d AllowCVar=%d DiffuseGI=%d StandaloneHWRT=%d TracingData=%d => %d"),
+				(int32)bSkipTracingDataCheck, (int32)bIncludeStandalone,
+				(int32)bLumenFeatureAllowed, (int32)bReflectionMethodLumen, (int32)bShowFlagLumenReflections, (int32)bAllowReflectionsCVar,
+				(int32)bDiffuseGIAllowed, (int32)bStandaloneHWRT, (int32)bTracingDataAvailable, (int32)bResult);
+		}
+		GDiagCounter++;
+
+		return bResult;
 	}
-	
+
 	return false;
 }
 

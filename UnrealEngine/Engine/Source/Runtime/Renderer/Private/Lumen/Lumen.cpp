@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Lumen.h"
+#include "RenderCore.h"
 #include "HAL/IConsoleManager.h"
 #include "RHI.h"
 #include "SceneRendering.h"
@@ -97,32 +98,32 @@ namespace Lumen
 		const bool bLumenGI = ShouldRenderLumenDiffuseGI(Scene, View);
 		const bool bLumenReflections = ShouldRenderLumenReflections(View);
 
-		if (bLumenGI
-			&& (UseHardwareRayTracedScreenProbeGather(*View.Family) 
-				|| UseHardwareRayTracedRadianceCache(*View.Family) 
+		const bool bGIHWRT = bLumenGI
+			&& (UseHardwareRayTracedScreenProbeGather(*View.Family)
+				|| UseHardwareRayTracedRadianceCache(*View.Family)
 				|| UseHardwareRayTracedDirectLighting(*View.Family)
-				|| UseHardwareRayTracedTranslucencyVolume(*View.Family)))
-		{
-			return true;
-		}
+				|| UseHardwareRayTracedTranslucencyVolume(*View.Family));
 
-		if (bLumenReflections
-			&& UseHardwareRayTracedReflections(*View.Family))
-		{
-			return true;
-		}
+		const bool bReflectionsHWRT = bLumenReflections
+			&& UseHardwareRayTracedReflections(*View.Family);
 
-		if ((bLumenGI || bLumenReflections) && Lumen::ShouldVisualizeHardwareRayTracing(*View.Family))
-		{
-			return true;
-		}
+		const bool bVisualizeHWRT = (bLumenGI || bLumenReflections) && Lumen::ShouldVisualizeHardwareRayTracing(*View.Family);
+		const bool bRadiosityHWRT = (bLumenGI || bLumenReflections) && Lumen::ShouldRenderRadiosityHardwareRayTracing(*View.Family);
+		const bool bResult = bGIHWRT || bReflectionsHWRT || bVisualizeHWRT || bRadiosityHWRT;
 
-		if ((bLumenGI || bLumenReflections) && Lumen::ShouldRenderRadiosityHardwareRayTracing(*View.Family))
+		// RTDIAG: temporary bring-up logging, remove once ray tracing pipeline is verified on device
+		static uint32 GDiagCounter = 0;
+		if (GDiagCounter < 3 || (GDiagCounter % 600) == 0)
 		{
-			return true;
+			UE_LOG(LogTemp, Display, TEXT("RTDIAG AnyLumenHWRT: LumenGI=%d LumenRefl=%d GI_HWRT=%d Refl_HWRT=%d => %d"),
+				(int32)bLumenGI, (int32)bLumenReflections, (int32)bGIHWRT, (int32)bReflectionsHWRT, (int32)bResult);
 		}
-#endif
+		GDiagCounter++;
+
+		return bResult;
+#else
 		return false;
+#endif
 	}
 
 	bool AnyLumenHardwareInlineRayTracingPassEnabled(const FScene* Scene, const FViewInfo& View)
@@ -160,14 +161,26 @@ bool Lumen::IsSoftwareRayTracingSupported()
 
 bool Lumen::IsLumenFeatureAllowedForView(const FScene* Scene, const FSceneView& View, bool bSkipTracingDataCheck, bool bSkipProjectCheck)
 {
-	return View.Family
-		&& DoesRuntimePlatformSupportLumen()
-		&& ShouldRenderLumenForViewFamily(Scene, *View.Family, bSkipProjectCheck)
-		// Don't update scene lighting for secondary views
-		&& !View.bIsPlanarReflection
-		&& !View.bIsReflectionCapture
-		&& View.State
-		&& (bSkipTracingDataCheck || Lumen::UseHardwareRayTracing(*View.Family) || IsSoftwareRayTracingSupported());
+	const bool bHasFamily = View.Family != nullptr;
+	const bool bRuntimePlatformSupportsLumen = DoesRuntimePlatformSupportLumen();
+	const bool bShouldRenderForFamily = bHasFamily && Scene != nullptr && ShouldRenderLumenForViewFamily(Scene, *View.Family, bSkipProjectCheck);
+	// Don't update scene lighting for secondary views
+	const bool bIsSecondaryView = View.bIsPlanarReflection || View.bIsReflectionCapture;
+	const bool bHasViewState = View.State != nullptr;
+	const bool bTracingDataAvailable = bSkipTracingDataCheck || (bHasFamily && (Lumen::UseHardwareRayTracing(*View.Family) || IsSoftwareRayTracingSupported()));
+	const bool bResult = bHasFamily && bRuntimePlatformSupportsLumen && bShouldRenderForFamily && !bIsSecondaryView && bHasViewState && bTracingDataAvailable;
+
+	// RTDIAG: temporary bring-up logging, remove once ray tracing pipeline is verified on device
+	static uint32 GDiagCounter = 0;
+	if (GDiagCounter < 3 || (GDiagCounter % 600) == 0)
+	{
+		UE_LOG(LogTemp, Display, TEXT("RTDIAG IsLumenFeatureAllowedForView: HasFamily=%d RuntimeLumen(R16UAVLoad)=%d FamilyAllowed=%d SecondaryView=%d HasState=%d TracingData=%d => %d"),
+			(int32)bHasFamily, (int32)bRuntimePlatformSupportsLumen, (int32)bShouldRenderForFamily,
+			(int32)bIsSecondaryView, (int32)bHasViewState, (int32)bTracingDataAvailable, (int32)bResult);
+	}
+	GDiagCounter++;
+
+	return bResult;
 }
 
 bool Lumen::UseGlobalSDFObjectGrid(const FSceneViewFamily& ViewFamily)

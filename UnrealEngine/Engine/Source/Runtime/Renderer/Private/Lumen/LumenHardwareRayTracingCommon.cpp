@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "LumenHardwareRayTracingCommon.h"
+#include "RenderCore.h"
 #include "RendererPrivate.h"
 #include "ScenePrivate.h"
 #include "SceneUtils.h"
@@ -147,12 +148,26 @@ static TAutoConsoleVariable<float> CVarLumenHardwareRayTracingSurfaceCacheSampli
 bool Lumen::UseHardwareRayTracing(const FSceneViewFamily& ViewFamily)
 {
 #if RHI_RAYTRACING
-	return IsRayTracingEnabled(ViewFamily.GetShaderPlatform())
-		&& (LumenHardwareRayTracing::IsInlineSupported() || LumenHardwareRayTracing::IsRayGenSupported())
-		&& CVarLumenUseHardwareRayTracing.GetValueOnAnyThread() != 0
-		// HWRT does not support multiple views yet due to TLAS, but stereo views can be allowed as they reuse TLAS for View[0]
-		&& (ViewFamily.Views.Num() == 1 || (ViewFamily.Views.Num() == 2 && IStereoRendering::IsStereoEyeView(*ViewFamily.Views[0])))
-		&& ViewFamily.Views[0]->IsRayTracingAllowedForView();
+	const bool bIsRayTracingEnabled = IsRayTracingEnabled(ViewFamily.GetShaderPlatform());
+	const bool bSupportsRT = LumenHardwareRayTracing::IsInlineSupported() || LumenHardwareRayTracing::IsRayGenSupported();
+	const bool bUseHWRTCvar = CVarLumenUseHardwareRayTracing.GetValueOnAnyThread() != 0;
+	// HWRT does not support multiple views yet due to TLAS, but stereo views can be allowed as they reuse TLAS for View[0]
+	const bool bViewsSupported = (ViewFamily.Views.Num() == 1 || (ViewFamily.Views.Num() == 2 && IStereoRendering::IsStereoEyeView(*ViewFamily.Views[0])));
+	const bool bAllowedForView = ViewFamily.Views.Num() > 0 && ViewFamily.Views[0]->IsRayTracingAllowedForView();
+	const bool bResult = bIsRayTracingEnabled && bSupportsRT && bUseHWRTCvar && bViewsSupported && bAllowedForView;
+
+	// RTDIAG: temporary bring-up logging, remove once ray tracing pipeline is verified on device
+	static uint32 GDiagCounter = 0;
+	if (GDiagCounter < 3 || (GDiagCounter % 600) == 0)
+	{
+		UE_LOG(LogTemp, Display, TEXT("RTDIAG Lumen::UseHardwareRayTracing: IsRTEnabled=%d SupportsRT=%d(Inline=%d RayGen=%d) CVar=%d Views=%d AllowedForView=%d => %d"),
+			(int32)bIsRayTracingEnabled,
+			(int32)bSupportsRT, (int32)LumenHardwareRayTracing::IsInlineSupported(), (int32)LumenHardwareRayTracing::IsRayGenSupported(),
+			(int32)bUseHWRTCvar, (int32)bViewsSupported, (int32)bAllowedForView, (int32)bResult);
+	}
+	GDiagCounter++;
+
+	return bResult;
 #else
 	return false;
 #endif
