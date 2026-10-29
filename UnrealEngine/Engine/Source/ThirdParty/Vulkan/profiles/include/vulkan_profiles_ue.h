@@ -46,6 +46,13 @@
 #endif
 
 #if defined(VK_VERSION_1_1)
+#define VP_UE_Vulkan_ES3_1_OpenHarmony 1
+#define VP_UE_VULKAN_ES3_1_OPENHARMONY_NAME "VP_UE_Vulkan_ES3_1_OpenHarmony"
+#define VP_UE_VULKAN_ES3_1_OPENHARMONY_SPEC_VERSION 1
+#define VP_UE_VULKAN_ES3_1_OPENHARMONY_MIN_API_VERSION VK_MAKE_VERSION(1, 1, 0)
+#endif
+
+#if defined(VK_VERSION_1_1)
 #define VP_UE_Vulkan_SM5 1
 #define VP_UE_VULKAN_SM5_NAME "VP_UE_Vulkan_SM5"
 #define VP_UE_VULKAN_SM5_SPEC_VERSION 1
@@ -71,6 +78,27 @@
 #define VP_UE_VULKAN_SM5_ANDROID_RT_NAME "VP_UE_Vulkan_SM5_Android_RT"
 #define VP_UE_VULKAN_SM5_ANDROID_RT_SPEC_VERSION 1
 #define VP_UE_VULKAN_SM5_ANDROID_RT_MIN_API_VERSION VK_MAKE_VERSION(1, 2, 0)
+#endif
+
+#if defined(VK_VERSION_1_1)
+#define VP_UE_Vulkan_SM5_OpenHarmony 1
+#define VP_UE_VULKAN_SM5_OPENHARMONY_NAME "VP_UE_Vulkan_SM5_OpenHarmony"
+#define VP_UE_VULKAN_SM5_OPENHARMONY_SPEC_VERSION 1
+#define VP_UE_VULKAN_SM5_OPENHARMONY_MIN_API_VERSION VK_MAKE_VERSION(1, 1, 0)
+#endif
+
+#if defined(VK_VERSION_1_2) && \
+    defined(VK_EXT_scalar_block_layout) && \
+    defined(VK_KHR_acceleration_structure) && \
+    defined(VK_KHR_buffer_device_address) && \
+    defined(VK_KHR_deferred_host_operations) && \
+    defined(VK_KHR_ray_query) && \
+    defined(VK_KHR_shader_float_controls) && \
+    defined(VK_KHR_spirv_1_4)
+#define VP_UE_Vulkan_SM5_OpenHarmony_RT 1
+#define VP_UE_VULKAN_SM5_OPENHARMONY_RT_NAME "VP_UE_Vulkan_SM5_OpenHarmony_RT"
+#define VP_UE_VULKAN_SM5_OPENHARMONY_RT_SPEC_VERSION 1
+#define VP_UE_VULKAN_SM5_OPENHARMONY_RT_MIN_API_VERSION VK_MAKE_VERSION(1, 2, 0)
 #endif
 
 #if defined(VK_VERSION_1_3) && \
@@ -662,6 +690,79 @@ static const VpStructChainerDesc chainerDesc = {
 } // namespace VP_UE_VULKAN_ES3_1_ANDROID
 #endif // VP_UE_Vulkan_ES3_1_Android
 
+#ifdef VP_UE_Vulkan_ES3_1_OpenHarmony
+namespace VP_UE_VULKAN_ES3_1_OPENHARMONY {
+
+static const VpFeatureDesc featureDesc = {
+    [](VkBaseOutStructure* p) { (void)p;
+    },
+    [](VkBaseOutStructure* p) -> bool { (void)p;
+        bool ret = true;
+        return ret;
+    }
+};
+
+static const VpPropertyDesc propertyDesc = {
+    [](VkBaseOutStructure* p) { (void)p;
+    },
+    [](VkBaseOutStructure* p) -> bool { (void)p;
+        bool ret = true;
+        return ret;
+    }
+};
+
+static const VpStructChainerDesc chainerDesc = {
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+};
+
+namespace baseline {
+static const VpFeatureDesc featureDesc = {
+    [](VkBaseOutStructure* p) { (void)p;
+    },
+    [](VkBaseOutStructure* p) -> bool { (void)p;
+        bool ret = true;
+        return ret;
+    }
+};
+
+static const VpPropertyDesc propertyDesc = {
+    [](VkBaseOutStructure* p) { (void)p;
+    },
+    [](VkBaseOutStructure* p) -> bool { (void)p;
+        bool ret = true;
+        return ret;
+    }
+};
+
+static const VpStructChainerDesc chainerDesc = {
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+};
+} //namespace baseline
+} // namespace VP_UE_VULKAN_ES3_1_OPENHARMONY
+#endif // VP_UE_Vulkan_ES3_1_OpenHarmony
+
 #ifdef VP_UE_Vulkan_SM5
 namespace VP_UE_VULKAN_SM5 {
 
@@ -1217,6 +1318,399 @@ static const VpStructChainerDesc chainerDesc = {
 } //namespace RayTracing
 } // namespace VP_UE_VULKAN_SM5_ANDROID_RT
 #endif // VP_UE_Vulkan_SM5_Android_RT
+
+#ifdef VP_UE_Vulkan_SM5_OpenHarmony
+namespace VP_UE_VULKAN_SM5_OPENHARMONY {
+
+static const VpFeatureDesc featureDesc = {
+    [](VkBaseOutStructure* p) { (void)p;
+    },
+    [](VkBaseOutStructure* p) -> bool { (void)p;
+        bool ret = true;
+        return ret;
+    }
+};
+
+static const VpPropertyDesc propertyDesc = {
+    [](VkBaseOutStructure* p) { (void)p;
+    },
+    [](VkBaseOutStructure* p) -> bool { (void)p;
+        bool ret = true;
+        return ret;
+    }
+};
+
+static const VpStructChainerDesc chainerDesc = {
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+};
+
+namespace baseline {
+static const VpFeatureDesc featureDesc = {
+    [](VkBaseOutStructure* p) { (void)p;
+    },
+    [](VkBaseOutStructure* p) -> bool { (void)p;
+        bool ret = true;
+        return ret;
+    }
+};
+
+static const VpPropertyDesc propertyDesc = {
+    [](VkBaseOutStructure* p) { (void)p;
+    },
+    [](VkBaseOutStructure* p) -> bool { (void)p;
+        bool ret = true;
+        return ret;
+    }
+};
+
+static const VpStructChainerDesc chainerDesc = {
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+};
+} //namespace baseline
+namespace SM5 {
+static const VpFeatureDesc featureDesc = {
+    [](VkBaseOutStructure* p) { (void)p;
+    },
+    [](VkBaseOutStructure* p) -> bool { (void)p;
+        bool ret = true;
+        return ret;
+    }
+};
+
+static const VpPropertyDesc propertyDesc = {
+    [](VkBaseOutStructure* p) { (void)p;
+    },
+    [](VkBaseOutStructure* p) -> bool { (void)p;
+        bool ret = true;
+        return ret;
+    }
+};
+
+static const VpStructChainerDesc chainerDesc = {
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+};
+} //namespace SM5
+} // namespace VP_UE_VULKAN_SM5_OPENHARMONY
+#endif // VP_UE_Vulkan_SM5_OpenHarmony
+
+#ifdef VP_UE_Vulkan_SM5_OpenHarmony_RT
+namespace VP_UE_VULKAN_SM5_OPENHARMONY_RT {
+
+static const VkStructureType featureStructTypes[] = {
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR,
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR,
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES_EXT,
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR,
+};
+
+static const VkStructureType propertyStructTypes[] = {
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR,
+};
+
+static const VkExtensionProperties deviceExtensions[] = {
+    VkExtensionProperties{ VK_EXT_SCALAR_BLOCK_LAYOUT_EXTENSION_NAME, 1 },
+    VkExtensionProperties{ VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME, 1 },
+    VkExtensionProperties{ VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME, 1 },
+    VkExtensionProperties{ VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME, 1 },
+    VkExtensionProperties{ VK_KHR_RAY_QUERY_EXTENSION_NAME, 1 },
+    VkExtensionProperties{ VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME, 1 },
+    VkExtensionProperties{ VK_KHR_SPIRV_1_4_EXTENSION_NAME, 1 },
+};
+
+static const VpFeatureDesc featureDesc = {
+    [](VkBaseOutStructure* p) { (void)p;
+            switch (p->sType) {
+                case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR: {
+                    VkPhysicalDeviceRayQueryFeaturesKHR* s = static_cast<VkPhysicalDeviceRayQueryFeaturesKHR*>(static_cast<void*>(p));
+                    s->rayQuery = VK_TRUE;
+                } break;
+                case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR: {
+                    VkPhysicalDeviceAccelerationStructureFeaturesKHR* s = static_cast<VkPhysicalDeviceAccelerationStructureFeaturesKHR*>(static_cast<void*>(p));
+                    s->accelerationStructure = VK_TRUE;
+                    s->descriptorBindingAccelerationStructureUpdateAfterBind = VK_TRUE;
+                } break;
+                case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES_EXT: {
+                    VkPhysicalDeviceScalarBlockLayoutFeaturesEXT* s = static_cast<VkPhysicalDeviceScalarBlockLayoutFeaturesEXT*>(static_cast<void*>(p));
+                    s->scalarBlockLayout = VK_TRUE;
+                } break;
+                case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR: {
+                    VkPhysicalDeviceFeatures2KHR* s = static_cast<VkPhysicalDeviceFeatures2KHR*>(static_cast<void*>(p));
+                    s->features.fragmentStoresAndAtomics = VK_TRUE;
+                } break;
+                default: break;
+            }
+    },
+    [](VkBaseOutStructure* p) -> bool { (void)p;
+        bool ret = true;
+            switch (p->sType) {
+                case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR: {
+                    VkPhysicalDeviceRayQueryFeaturesKHR* prettify_VkPhysicalDeviceRayQueryFeaturesKHR = static_cast<VkPhysicalDeviceRayQueryFeaturesKHR*>(static_cast<void*>(p));
+                    ret = ret && (prettify_VkPhysicalDeviceRayQueryFeaturesKHR->rayQuery == VK_TRUE); VP_DEBUG_COND_MSG(!(prettify_VkPhysicalDeviceRayQueryFeaturesKHR->rayQuery == VK_TRUE), "Unsupported feature condition: VkPhysicalDeviceRayQueryFeaturesKHR::rayQuery == VK_TRUE");
+                } break;
+                case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR: {
+                    VkPhysicalDeviceAccelerationStructureFeaturesKHR* prettify_VkPhysicalDeviceAccelerationStructureFeaturesKHR = static_cast<VkPhysicalDeviceAccelerationStructureFeaturesKHR*>(static_cast<void*>(p));
+                    ret = ret && (prettify_VkPhysicalDeviceAccelerationStructureFeaturesKHR->accelerationStructure == VK_TRUE); VP_DEBUG_COND_MSG(!(prettify_VkPhysicalDeviceAccelerationStructureFeaturesKHR->accelerationStructure == VK_TRUE), "Unsupported feature condition: VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructure == VK_TRUE");
+                    ret = ret && (prettify_VkPhysicalDeviceAccelerationStructureFeaturesKHR->descriptorBindingAccelerationStructureUpdateAfterBind == VK_TRUE); VP_DEBUG_COND_MSG(!(prettify_VkPhysicalDeviceAccelerationStructureFeaturesKHR->descriptorBindingAccelerationStructureUpdateAfterBind == VK_TRUE), "Unsupported feature condition: VkPhysicalDeviceAccelerationStructureFeaturesKHR::descriptorBindingAccelerationStructureUpdateAfterBind == VK_TRUE");
+                } break;
+                case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES_EXT: {
+                    VkPhysicalDeviceScalarBlockLayoutFeaturesEXT* prettify_VkPhysicalDeviceScalarBlockLayoutFeaturesEXT = static_cast<VkPhysicalDeviceScalarBlockLayoutFeaturesEXT*>(static_cast<void*>(p));
+                    ret = ret && (prettify_VkPhysicalDeviceScalarBlockLayoutFeaturesEXT->scalarBlockLayout == VK_TRUE); VP_DEBUG_COND_MSG(!(prettify_VkPhysicalDeviceScalarBlockLayoutFeaturesEXT->scalarBlockLayout == VK_TRUE), "Unsupported feature condition: VkPhysicalDeviceScalarBlockLayoutFeaturesEXT::scalarBlockLayout == VK_TRUE");
+                } break;
+                case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR: {
+                    VkPhysicalDeviceFeatures2KHR* prettify_VkPhysicalDeviceFeatures2KHR = static_cast<VkPhysicalDeviceFeatures2KHR*>(static_cast<void*>(p));
+                    ret = ret && (prettify_VkPhysicalDeviceFeatures2KHR->features.fragmentStoresAndAtomics == VK_TRUE); VP_DEBUG_COND_MSG(!(prettify_VkPhysicalDeviceFeatures2KHR->features.fragmentStoresAndAtomics == VK_TRUE), "Unsupported feature condition: VkPhysicalDeviceFeatures2KHR::features.fragmentStoresAndAtomics == VK_TRUE");
+                } break;
+                default: break;
+            }
+        return ret;
+    }
+};
+
+static const VpPropertyDesc propertyDesc = {
+    [](VkBaseOutStructure* p) { (void)p;
+    },
+    [](VkBaseOutStructure* p) -> bool { (void)p;
+        bool ret = true;
+        return ret;
+    }
+};
+
+static const VpStructChainerDesc chainerDesc = {
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        VkPhysicalDeviceRayQueryFeaturesKHR physicalDeviceRayQueryFeaturesKHR{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR, nullptr };
+        VkPhysicalDeviceAccelerationStructureFeaturesKHR physicalDeviceAccelerationStructureFeaturesKHR{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR, &physicalDeviceRayQueryFeaturesKHR };
+        VkPhysicalDeviceScalarBlockLayoutFeaturesEXT physicalDeviceScalarBlockLayoutFeaturesEXT{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES_EXT, &physicalDeviceAccelerationStructureFeaturesKHR };
+        p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceScalarBlockLayoutFeaturesEXT));
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(nullptr));
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+};
+
+namespace baseline {
+static const VpFeatureDesc featureDesc = {
+    [](VkBaseOutStructure* p) { (void)p;
+    },
+    [](VkBaseOutStructure* p) -> bool { (void)p;
+        bool ret = true;
+        return ret;
+    }
+};
+
+static const VpPropertyDesc propertyDesc = {
+    [](VkBaseOutStructure* p) { (void)p;
+    },
+    [](VkBaseOutStructure* p) -> bool { (void)p;
+        bool ret = true;
+        return ret;
+    }
+};
+
+static const VpStructChainerDesc chainerDesc = {
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        VkPhysicalDeviceRayQueryFeaturesKHR physicalDeviceRayQueryFeaturesKHR{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR, nullptr };
+        VkPhysicalDeviceAccelerationStructureFeaturesKHR physicalDeviceAccelerationStructureFeaturesKHR{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR, &physicalDeviceRayQueryFeaturesKHR };
+        VkPhysicalDeviceScalarBlockLayoutFeaturesEXT physicalDeviceScalarBlockLayoutFeaturesEXT{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES_EXT, &physicalDeviceAccelerationStructureFeaturesKHR };
+        p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceScalarBlockLayoutFeaturesEXT));
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(nullptr));
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+};
+} //namespace baseline
+namespace SM5 {
+static const VpFeatureDesc featureDesc = {
+    [](VkBaseOutStructure* p) { (void)p;
+    },
+    [](VkBaseOutStructure* p) -> bool { (void)p;
+        bool ret = true;
+        return ret;
+    }
+};
+
+static const VpPropertyDesc propertyDesc = {
+    [](VkBaseOutStructure* p) { (void)p;
+    },
+    [](VkBaseOutStructure* p) -> bool { (void)p;
+        bool ret = true;
+        return ret;
+    }
+};
+
+static const VpStructChainerDesc chainerDesc = {
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        VkPhysicalDeviceRayQueryFeaturesKHR physicalDeviceRayQueryFeaturesKHR{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR, nullptr };
+        VkPhysicalDeviceAccelerationStructureFeaturesKHR physicalDeviceAccelerationStructureFeaturesKHR{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR, &physicalDeviceRayQueryFeaturesKHR };
+        VkPhysicalDeviceScalarBlockLayoutFeaturesEXT physicalDeviceScalarBlockLayoutFeaturesEXT{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES_EXT, &physicalDeviceAccelerationStructureFeaturesKHR };
+        p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceScalarBlockLayoutFeaturesEXT));
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(nullptr));
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+};
+} //namespace SM5
+namespace RayTracing {
+static const VkExtensionProperties deviceExtensions[] = {
+    VkExtensionProperties{ VK_EXT_SCALAR_BLOCK_LAYOUT_EXTENSION_NAME, 1 },
+    VkExtensionProperties{ VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME, 1 },
+    VkExtensionProperties{ VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME, 1 },
+    VkExtensionProperties{ VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME, 1 },
+    VkExtensionProperties{ VK_KHR_RAY_QUERY_EXTENSION_NAME, 1 },
+    VkExtensionProperties{ VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME, 1 },
+    VkExtensionProperties{ VK_KHR_SPIRV_1_4_EXTENSION_NAME, 1 },
+};
+
+static const VpFeatureDesc featureDesc = {
+    [](VkBaseOutStructure* p) { (void)p;
+            switch (p->sType) {
+                case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR: {
+                    VkPhysicalDeviceRayQueryFeaturesKHR* s = static_cast<VkPhysicalDeviceRayQueryFeaturesKHR*>(static_cast<void*>(p));
+                    s->rayQuery = VK_TRUE;
+                } break;
+                case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR: {
+                    VkPhysicalDeviceAccelerationStructureFeaturesKHR* s = static_cast<VkPhysicalDeviceAccelerationStructureFeaturesKHR*>(static_cast<void*>(p));
+                    s->accelerationStructure = VK_TRUE;
+                    s->descriptorBindingAccelerationStructureUpdateAfterBind = VK_TRUE;
+                } break;
+                case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES_EXT: {
+                    VkPhysicalDeviceScalarBlockLayoutFeaturesEXT* s = static_cast<VkPhysicalDeviceScalarBlockLayoutFeaturesEXT*>(static_cast<void*>(p));
+                    s->scalarBlockLayout = VK_TRUE;
+                } break;
+                case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR: {
+                    VkPhysicalDeviceFeatures2KHR* s = static_cast<VkPhysicalDeviceFeatures2KHR*>(static_cast<void*>(p));
+                    s->features.fragmentStoresAndAtomics = VK_TRUE;
+                } break;
+                default: break;
+            }
+    },
+    [](VkBaseOutStructure* p) -> bool { (void)p;
+        bool ret = true;
+            switch (p->sType) {
+                case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR: {
+                    VkPhysicalDeviceRayQueryFeaturesKHR* prettify_VkPhysicalDeviceRayQueryFeaturesKHR = static_cast<VkPhysicalDeviceRayQueryFeaturesKHR*>(static_cast<void*>(p));
+                    ret = ret && (prettify_VkPhysicalDeviceRayQueryFeaturesKHR->rayQuery == VK_TRUE); VP_DEBUG_COND_MSG(!(prettify_VkPhysicalDeviceRayQueryFeaturesKHR->rayQuery == VK_TRUE), "Unsupported feature condition: VkPhysicalDeviceRayQueryFeaturesKHR::rayQuery == VK_TRUE");
+                } break;
+                case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR: {
+                    VkPhysicalDeviceAccelerationStructureFeaturesKHR* prettify_VkPhysicalDeviceAccelerationStructureFeaturesKHR = static_cast<VkPhysicalDeviceAccelerationStructureFeaturesKHR*>(static_cast<void*>(p));
+                    ret = ret && (prettify_VkPhysicalDeviceAccelerationStructureFeaturesKHR->accelerationStructure == VK_TRUE); VP_DEBUG_COND_MSG(!(prettify_VkPhysicalDeviceAccelerationStructureFeaturesKHR->accelerationStructure == VK_TRUE), "Unsupported feature condition: VkPhysicalDeviceAccelerationStructureFeaturesKHR::accelerationStructure == VK_TRUE");
+                    ret = ret && (prettify_VkPhysicalDeviceAccelerationStructureFeaturesKHR->descriptorBindingAccelerationStructureUpdateAfterBind == VK_TRUE); VP_DEBUG_COND_MSG(!(prettify_VkPhysicalDeviceAccelerationStructureFeaturesKHR->descriptorBindingAccelerationStructureUpdateAfterBind == VK_TRUE), "Unsupported feature condition: VkPhysicalDeviceAccelerationStructureFeaturesKHR::descriptorBindingAccelerationStructureUpdateAfterBind == VK_TRUE");
+                } break;
+                case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES_EXT: {
+                    VkPhysicalDeviceScalarBlockLayoutFeaturesEXT* prettify_VkPhysicalDeviceScalarBlockLayoutFeaturesEXT = static_cast<VkPhysicalDeviceScalarBlockLayoutFeaturesEXT*>(static_cast<void*>(p));
+                    ret = ret && (prettify_VkPhysicalDeviceScalarBlockLayoutFeaturesEXT->scalarBlockLayout == VK_TRUE); VP_DEBUG_COND_MSG(!(prettify_VkPhysicalDeviceScalarBlockLayoutFeaturesEXT->scalarBlockLayout == VK_TRUE), "Unsupported feature condition: VkPhysicalDeviceScalarBlockLayoutFeaturesEXT::scalarBlockLayout == VK_TRUE");
+                } break;
+                case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR: {
+                    VkPhysicalDeviceFeatures2KHR* prettify_VkPhysicalDeviceFeatures2KHR = static_cast<VkPhysicalDeviceFeatures2KHR*>(static_cast<void*>(p));
+                    ret = ret && (prettify_VkPhysicalDeviceFeatures2KHR->features.fragmentStoresAndAtomics == VK_TRUE); VP_DEBUG_COND_MSG(!(prettify_VkPhysicalDeviceFeatures2KHR->features.fragmentStoresAndAtomics == VK_TRUE), "Unsupported feature condition: VkPhysicalDeviceFeatures2KHR::features.fragmentStoresAndAtomics == VK_TRUE");
+                } break;
+                default: break;
+            }
+        return ret;
+    }
+};
+
+static const VpPropertyDesc propertyDesc = {
+    [](VkBaseOutStructure* p) { (void)p;
+            switch (p->sType) {
+                case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR: {
+                    VkPhysicalDeviceProperties2KHR* s = static_cast<VkPhysicalDeviceProperties2KHR*>(static_cast<void*>(p));
+                    s->properties.limits.maxBoundDescriptorSets = 7;
+                } break;
+                default: break;
+            }
+    },
+    [](VkBaseOutStructure* p) -> bool { (void)p;
+        bool ret = true;
+            switch (p->sType) {
+                case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR: {
+                    VkPhysicalDeviceProperties2KHR* prettify_VkPhysicalDeviceProperties2KHR = static_cast<VkPhysicalDeviceProperties2KHR*>(static_cast<void*>(p));
+                    ret = ret && (prettify_VkPhysicalDeviceProperties2KHR->properties.limits.maxBoundDescriptorSets >= 7); VP_DEBUG_COND_MSG(!(prettify_VkPhysicalDeviceProperties2KHR->properties.limits.maxBoundDescriptorSets >= 7), "Unsupported properties condition: VkPhysicalDeviceProperties2KHR::properties.limits.maxBoundDescriptorSets >= 7");
+                } break;
+                default: break;
+            }
+        return ret;
+    }
+};
+
+static const VpStructChainerDesc chainerDesc = {
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        VkPhysicalDeviceRayQueryFeaturesKHR physicalDeviceRayQueryFeaturesKHR{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR, nullptr };
+        VkPhysicalDeviceAccelerationStructureFeaturesKHR physicalDeviceAccelerationStructureFeaturesKHR{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR, &physicalDeviceRayQueryFeaturesKHR };
+        VkPhysicalDeviceScalarBlockLayoutFeaturesEXT physicalDeviceScalarBlockLayoutFeaturesEXT{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES_EXT, &physicalDeviceAccelerationStructureFeaturesKHR };
+        p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(&physicalDeviceScalarBlockLayoutFeaturesEXT));
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        p->pNext = static_cast<VkBaseOutStructure*>(static_cast<void*>(nullptr));
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+    [](VkBaseOutStructure* p, void* pUser, PFN_vpStructChainerCb pfnCb) {
+        pfnCb(p, pUser);
+    },
+};
+} //namespace RayTracing
+} // namespace VP_UE_VULKAN_SM5_OPENHARMONY_RT
+#endif // VP_UE_Vulkan_SM5_OpenHarmony_RT
 
 #ifdef VP_UE_Vulkan_SM6
 namespace VP_UE_VULKAN_SM6 {
@@ -2346,6 +2840,52 @@ namespace VP_UE_VULKAN_ES3_1_ANDROID {
 } // namespace VP_UE_VULKAN_ES3_1_ANDROID
 #endif //VP_UE_Vulkan_ES3_1_Android
 
+#ifdef VP_UE_Vulkan_ES3_1_OpenHarmony
+namespace VP_UE_VULKAN_ES3_1_OPENHARMONY {
+    static const VpVariantDesc mergedCapabilities[] = {
+        {
+        "MERGED",
+        0, nullptr,
+        0, nullptr,
+        0, nullptr,
+            featureDesc,
+        0, nullptr,
+            propertyDesc,
+        0, nullptr,
+        0, nullptr,
+        0, nullptr,
+        0, nullptr,
+        chainerDesc,
+        },
+    };
+
+    namespace baseline {
+        static const VpVariantDesc variants[] = {
+            {
+                "baseline",
+                0, nullptr,
+                0, nullptr,
+                0, nullptr,
+                baseline::featureDesc,
+                0, nullptr,
+                baseline::propertyDesc,
+                0, nullptr,
+                0, nullptr,
+                0, nullptr,
+                0, nullptr,
+                baseline::chainerDesc,
+            },
+        };
+        static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+    } // namespace baseline
+
+    static const VpCapabilitiesDesc capabilities[] = {
+        { baseline::variantCount, baseline::variants },
+    };
+    static const uint32_t capabilityCount = static_cast<uint32_t>(std::size(capabilities));
+} // namespace VP_UE_VULKAN_ES3_1_OPENHARMONY
+#endif //VP_UE_Vulkan_ES3_1_OpenHarmony
+
 #ifdef VP_UE_Vulkan_SM5
 namespace VP_UE_VULKAN_SM5 {
     static const VpVariantDesc mergedCapabilities[] = {
@@ -2568,6 +3108,161 @@ namespace VP_UE_VULKAN_SM5_ANDROID_RT {
 } // namespace VP_UE_VULKAN_SM5_ANDROID_RT
 #endif //VP_UE_Vulkan_SM5_Android_RT
 
+#ifdef VP_UE_Vulkan_SM5_OpenHarmony
+namespace VP_UE_VULKAN_SM5_OPENHARMONY {
+    static const VpVariantDesc mergedCapabilities[] = {
+        {
+        "MERGED",
+        0, nullptr,
+        0, nullptr,
+        0, nullptr,
+            featureDesc,
+        0, nullptr,
+            propertyDesc,
+        0, nullptr,
+        0, nullptr,
+        0, nullptr,
+        0, nullptr,
+        chainerDesc,
+        },
+    };
+
+    namespace baseline {
+        static const VpVariantDesc variants[] = {
+            {
+                "baseline",
+                0, nullptr,
+                0, nullptr,
+                0, nullptr,
+                baseline::featureDesc,
+                0, nullptr,
+                baseline::propertyDesc,
+                0, nullptr,
+                0, nullptr,
+                0, nullptr,
+                0, nullptr,
+                baseline::chainerDesc,
+            },
+        };
+        static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+    } // namespace baseline
+
+    namespace SM5 {
+        static const VpVariantDesc variants[] = {
+            {
+                "SM5",
+                0, nullptr,
+                0, nullptr,
+                0, nullptr,
+                SM5::featureDesc,
+                0, nullptr,
+                SM5::propertyDesc,
+                0, nullptr,
+                0, nullptr,
+                0, nullptr,
+                0, nullptr,
+                SM5::chainerDesc,
+            },
+        };
+        static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+    } // namespace SM5
+
+    static const VpCapabilitiesDesc capabilities[] = {
+        { baseline::variantCount, baseline::variants },
+        { SM5::variantCount, SM5::variants },
+    };
+    static const uint32_t capabilityCount = static_cast<uint32_t>(std::size(capabilities));
+} // namespace VP_UE_VULKAN_SM5_OPENHARMONY
+#endif //VP_UE_Vulkan_SM5_OpenHarmony
+
+#ifdef VP_UE_Vulkan_SM5_OpenHarmony_RT
+namespace VP_UE_VULKAN_SM5_OPENHARMONY_RT {
+    static const VpVariantDesc mergedCapabilities[] = {
+        {
+        "MERGED",
+        0, nullptr,
+        static_cast<uint32_t>(std::size(deviceExtensions)), deviceExtensions,
+        static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+            featureDesc,
+        0, nullptr,
+            propertyDesc,
+        0, nullptr,
+        0, nullptr,
+        0, nullptr,
+        0, nullptr,
+        chainerDesc,
+        },
+    };
+
+    namespace baseline {
+        static const VpVariantDesc variants[] = {
+            {
+                "baseline",
+                0, nullptr,
+                0, nullptr,
+                0, nullptr,
+                baseline::featureDesc,
+                0, nullptr,
+                baseline::propertyDesc,
+                0, nullptr,
+                0, nullptr,
+                0, nullptr,
+                0, nullptr,
+                baseline::chainerDesc,
+            },
+        };
+        static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+    } // namespace baseline
+
+    namespace SM5 {
+        static const VpVariantDesc variants[] = {
+            {
+                "SM5",
+                0, nullptr,
+                0, nullptr,
+                0, nullptr,
+                SM5::featureDesc,
+                0, nullptr,
+                SM5::propertyDesc,
+                0, nullptr,
+                0, nullptr,
+                0, nullptr,
+                0, nullptr,
+                SM5::chainerDesc,
+            },
+        };
+        static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+    } // namespace SM5
+
+    namespace RayTracing {
+        static const VpVariantDesc variants[] = {
+            {
+                "RayTracing",
+                0, nullptr,
+                static_cast<uint32_t>(std::size(RayTracing::deviceExtensions)), RayTracing::deviceExtensions,
+                static_cast<uint32_t>(std::size(featureStructTypes)), featureStructTypes,
+                RayTracing::featureDesc,
+                static_cast<uint32_t>(std::size(propertyStructTypes)), propertyStructTypes,
+                RayTracing::propertyDesc,
+                0, nullptr,
+                0, nullptr,
+                0, nullptr,
+                0, nullptr,
+                RayTracing::chainerDesc,
+            },
+        };
+        static const uint32_t variantCount = static_cast<uint32_t>(std::size(variants));
+    } // namespace RayTracing
+
+    static const VpCapabilitiesDesc capabilities[] = {
+        { baseline::variantCount, baseline::variants },
+        { SM5::variantCount, SM5::variants },
+        { RayTracing::variantCount, RayTracing::variants },
+    };
+    static const uint32_t capabilityCount = static_cast<uint32_t>(std::size(capabilities));
+} // namespace VP_UE_VULKAN_SM5_OPENHARMONY_RT
+#endif //VP_UE_Vulkan_SM5_OpenHarmony_RT
+
 #ifdef VP_UE_Vulkan_SM6
 namespace VP_UE_VULKAN_SM6 {
     static const VpVariantDesc mergedCapabilities[] = {
@@ -2734,6 +3429,16 @@ static const VpProfileDesc profiles[] = {
         0, nullptr,
     },
 #endif // VP_UE_VULKAN_ES3_1_ANDROID
+#ifdef VP_UE_Vulkan_ES3_1_OpenHarmony
+    VpProfileDesc{
+        VpProfileProperties{ VP_UE_VULKAN_ES3_1_OPENHARMONY_NAME, VP_UE_VULKAN_ES3_1_OPENHARMONY_SPEC_VERSION },
+        VP_UE_VULKAN_ES3_1_OPENHARMONY_MIN_API_VERSION,
+        VP_UE_VULKAN_ES3_1_OPENHARMONY::mergedCapabilities,
+        0, nullptr,
+        VP_UE_VULKAN_ES3_1_OPENHARMONY::capabilityCount, VP_UE_VULKAN_ES3_1_OPENHARMONY::capabilities,
+        0, nullptr,
+    },
+#endif // VP_UE_VULKAN_ES3_1_OPENHARMONY
 #ifdef VP_UE_Vulkan_SM5
     VpProfileDesc{
         VpProfileProperties{ VP_UE_VULKAN_SM5_NAME, VP_UE_VULKAN_SM5_SPEC_VERSION },
@@ -2764,6 +3469,26 @@ static const VpProfileDesc profiles[] = {
         0, nullptr,
     },
 #endif // VP_UE_VULKAN_SM5_ANDROID_RT
+#ifdef VP_UE_Vulkan_SM5_OpenHarmony
+    VpProfileDesc{
+        VpProfileProperties{ VP_UE_VULKAN_SM5_OPENHARMONY_NAME, VP_UE_VULKAN_SM5_OPENHARMONY_SPEC_VERSION },
+        VP_UE_VULKAN_SM5_OPENHARMONY_MIN_API_VERSION,
+        VP_UE_VULKAN_SM5_OPENHARMONY::mergedCapabilities,
+        0, nullptr,
+        VP_UE_VULKAN_SM5_OPENHARMONY::capabilityCount, VP_UE_VULKAN_SM5_OPENHARMONY::capabilities,
+        0, nullptr,
+    },
+#endif // VP_UE_VULKAN_SM5_OPENHARMONY
+#ifdef VP_UE_Vulkan_SM5_OpenHarmony_RT
+    VpProfileDesc{
+        VpProfileProperties{ VP_UE_VULKAN_SM5_OPENHARMONY_RT_NAME, VP_UE_VULKAN_SM5_OPENHARMONY_RT_SPEC_VERSION },
+        VP_UE_VULKAN_SM5_OPENHARMONY_RT_MIN_API_VERSION,
+        VP_UE_VULKAN_SM5_OPENHARMONY_RT::mergedCapabilities,
+        0, nullptr,
+        VP_UE_VULKAN_SM5_OPENHARMONY_RT::capabilityCount, VP_UE_VULKAN_SM5_OPENHARMONY_RT::capabilities,
+        0, nullptr,
+    },
+#endif // VP_UE_VULKAN_SM5_OPENHARMONY_RT
 #ifdef VP_UE_Vulkan_SM6
     VpProfileDesc{
         VpProfileProperties{ VP_UE_VULKAN_SM6_NAME, VP_UE_VULKAN_SM6_SPEC_VERSION },

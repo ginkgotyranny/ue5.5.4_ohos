@@ -108,6 +108,63 @@
                 "SM5",
 				"RayTracing"
             ]
+        },
+		"VP_UE_Vulkan_ES3_1_OpenHarmony": {
+            "version": 1,
+            "api-version": "1.1.0",
+            "label": "Epic Games - Unreal Engine - OpenHarmony Vulkan - ES 3.1",
+            "description": "A profile that describes the minimum requirements of the engine for using ES 3.1 feature level with Vulkan on OpenHarmony.",
+            "contributors": {},
+            "history": [
+                {
+                    "revision": 1,
+                    "date": "2026-10-27",
+                    "author": "gtyranny",
+                    "comment": "Initial Release"
+                }
+            ],
+            "capabilities": [
+                "baseline"
+            ]
+        },
+		"VP_UE_Vulkan_SM5_OpenHarmony": {
+            "version": 1,
+            "api-version": "1.1.0",
+            "label": "Epic Games - Unreal Engine - OpenHarmony Vulkan SM5",
+            "description": "A profile that describes the minimum requirements of the engine for using Vulkan on OpenHarmony.",
+            "contributors": {},
+            "history": [
+                {
+                    "revision": 1,
+                    "date": "2026-10-27",
+                    "author": "gtyranny",
+                    "comment": "Initial Release"
+                }
+            ],
+            "capabilities": [
+                "baseline",
+				"SM5"
+            ]
+        },
+		"VP_UE_Vulkan_SM5_OpenHarmony_RT": {
+            "version": 1,
+            "api-version": "1.2.0",
+            "label": "Epic Games - Unreal Engine - OpenHarmony Vulkan SM5 with RayTracing",
+            "description": "A profile that describes the RayTracing requirements of the engine with Vulkan on OpenHarmony.",
+            "contributors": {},
+            "history": [
+                {
+                    "revision": 1,
+                    "date": "2026-10-27",
+                    "author": "gtyranny",
+                    "comment": "Initial Release"
+                }
+            ],
+            "capabilities": [
+                "baseline",
+                "SM5",
+				"RayTracing"
+            ]
         }
     }
 }
