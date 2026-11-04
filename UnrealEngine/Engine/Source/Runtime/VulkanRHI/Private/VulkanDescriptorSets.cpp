@@ -65,7 +65,7 @@ static FAutoConsoleVariableRef CVarVulkanBindlessMaxStorageBufferCount(
 	ECVF_ReadOnly
 );
 
-int32 GVulkanBindlessMaxAccelerationStructureDescriptorCount = 64 * 1024;
+int32 GVulkanBindlessMaxAccelerationStructureDescriptorCount = 128; // 64 * 1024
 static FAutoConsoleVariableRef CVarVulkanBindlessMaxAccelerationStructureCount(
 	TEXT("r.Vulkan.Bindless.MaxResourceAccelerationStructureCount"),
 	GVulkanBindlessMaxAccelerationStructureDescriptorCount,
